@@ -13,8 +13,11 @@ docker-$(1)-$(2) : $(1)/Dockerfile.$(1)
 endef
 
 cuda-tensorflow_tags = cuda cuda-py cuda-py-tf \
-cuda-2004 cuda-1804 cuda-11-5-py-3-9-tf-2-7-0 cuda-11-2-py-3-9-tf-2-6-2 cuda-11-2-py-3-9-tf-2-5-2 cuda-11-0-py-3-9-tf-2-4-4
-	#cuda-tensorflow-v2.6.0
+		cuda-2004 cuda-1804 \
+		cuda-11-5-py-3-9-tf-2-7-0 \
+		cuda-11-2-py-3-9-tf-2-6-2 \
+		cuda-11-2-py-3-9-tf-2-5-2 \
+		cuda-11-0-py-3-9-tf-2-4-4
 docker-cuda-tensorflow: $(addprefix docker-cuda-tensorflow-,$(cuda-tensorflow_tags))
 $(foreach tag,$(cuda-tensorflow_tags),\
 	$(eval $(call docker-builder,cuda-tensorflow,$(tag))) )
