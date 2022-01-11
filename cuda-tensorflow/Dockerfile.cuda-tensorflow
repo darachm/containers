@@ -1,0 +1,132 @@
+FROM ubuntu:20.04 AS cuda-base
+ARG DEBIAN_FRONTEND="noninteractive"
+
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
+RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+RUN apt-get update && apt-get install -y \
+    apt-transport-https software-properties-common wget
+RUN apt-get update && apt-get upgrade -y
+
+##### 
+
+FROM cuda-base AS cuda-2004
+ARG OS=ubuntu2004
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin 
+RUN mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/7fa2af80.pub
+RUN add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/ /"
+RUN wget https://developer.download.nvidia.com/compute/machine-learning/repos/${OS}/x86_64/nvidia-machine-learning-repo-${OS}_1.0.0-1_amd64.deb
+RUN apt-get install -y ./nvidia-machine-learning-repo-${OS}_1.0.0-1_amd64.deb
+
+FROM cuda-base AS cuda-1804
+ARG OS=ubuntu1804
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin 
+RUN mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/7fa2af80.pub
+RUN add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/ /"
+RUN wget https://developer.download.nvidia.com/compute/machine-learning/repos/${OS}/x86_64/nvidia-machine-learning-repo-${OS}_1.0.0-1_amd64.deb
+RUN apt-get install -y ./nvidia-machine-learning-repo-${OS}_1.0.0-1_amd64.deb
+
+#RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.0.130-1_amd64.deb
+#RUN dpkg -i cuda-repo-ubuntu1804_10.0.130-1_amd64.deb
+#RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+#RUN apt-get update
+#RUN apt-get install cuda-10-0
+#
+
+##### cuda
+
+FROM cuda-2004 AS cuda
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN apt-get update
+RUN apt-get install --no-install-recommends -y \
+    cuda libcudnn8 libcudnn8-dev
+
+FROM cuda-2004 AS cuda-11-5
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN apt-get update
+RUN apt-get install --no-install-recommends -y \
+    cuda-11-5 libcudnn8 libcudnn8-dev
+
+FROM cuda-2004 AS cuda-11-2
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN apt-get update
+RUN apt-get install --no-install-recommends -y \
+    cuda-11-2 libcudnn8 libcudnn8-dev
+
+FROM cuda-2004 AS cuda-11-0
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN apt-get update
+RUN apt-get install --no-install-recommends -y \
+    cuda-11-0 libcudnn8 libcudnn8-dev
+
+#FROM cuda-base AS cuda-10-1
+#ARG DEBIAN_FRONTEND="noninteractive"
+#RUN apt-get update
+#RUN apt-get install --no-install-recommends -y \
+#    cuda-11-0 libcudnn8 libcudnn8-dev
+
+##### cuda-py
+
+FROM cuda AS cuda-py
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN apt-get install --no-install-recommends -y \
+    python3 python3-pip 
+
+FROM cuda-11-5 AS cuda-11-5-py-3-9
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN apt-get install --no-install-recommends -y \
+    python3.9 python3-pip 
+
+FROM cuda-11-2 AS cuda-11-2-py-3-9
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN apt-get install --no-install-recommends -y \
+    python3.9 python3-pip 
+
+FROM cuda-11-0 AS cuda-11-0-py-3-9
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN apt-get install --no-install-recommends -y \
+    python3.9 python3-pip 
+
+##### cuda-py-tf
+
+FROM cuda-py AS cuda-py-tf
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN python3 -m pip install tensorflow
+
+FROM cuda-11-5-py-3-9 AS cuda-11-5-py-3-9-tf-2-7-0
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN python3 -m pip install tensorflow==2.7.0
+
+FROM cuda-11-2-py-3-9 AS cuda-11-2-py-3-9-tf-2-6-2
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN python3 -m pip install tensorflow==2.6.2
+
+FROM cuda-11-2-py-3-9 AS cuda-11-2-py-3-9-tf-2-5-2
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN python3 -m pip install tensorflow==2.5.2
+
+FROM cuda-11-0-py-3-9 AS cuda-11-0-py-3-9-tf-2-4-4
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN python3 -m pip install tensorflow==2.4.4
+
+
+
+#FROM cuda-11-0 AS cuda-11-0-py-3-9
+#ARG DEBIAN_FRONTEND="noninteractive"
+#RUN apt-get install --no-install-recommends -y \
+#    python3.9 python3-pip 
+##
+#FROM cuda-11-0-py-3-9 AS cuda-11-0-py-3-9-tf-2-4-4
+#ARG DEBIAN_FRONTEND="noninteractive"
+#RUN python3 -m pip install tensorflow==2.4.4
+
+
+#    python3 -m pip install -U pip wheel
+#    #python3 -m pip install numpy==1.19.4 six==1.15.0
+#    #python3 -m pip install -U keras_preprocessing --no-deps
+    
+#    python3 -c "import tensorflow as tf; print(tf.__version__)"
+

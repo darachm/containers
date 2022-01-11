@@ -1,0 +1,52 @@
+FROM ubuntu:20.04 AS bioinf-base
+
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+RUN apt-get update 
+
+RUN apt-get install -y --no-install-recommends \
+    gnupg2 software-properties-common git g++ gcc make gdb \
+    wget curl gzip bzip2 lzma pigz xz-utils \
+    gawk mawk perl \
+    zlib1g zlib1g-dev libbz2-dev liblz-dev liblzma-dev liblzma5 \
+    libcurl4-openssl-dev \
+    ncurses-base ncurses-bin libncurses5-dev autoconf \
+    sqlite3 csvkit graphviz
+
+FROM bioinf-base AS bioinf-sam
+
+WORKDIR /sam
+RUN wget https://github.com/samtools/samtools/releases/download/1.14/samtools-1.14.tar.bz2
+RUN tar -xvjf samtools-1.14.tar.bz2 && cd samtools-1.14 && ./configure --prefix=/usr && make && make install
+
+FROM bioinf-sam AS bioinf-sam-bedtools
+
+RUN apt-get install -y --no-install-recommends \
+    bedtools
+
+FROM bioinf-sam-bedtools AS bioinf-sam-bedtools-parallel
+    WORKDIR /parallel
+    RUN wget https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2
+    RUN tar -xvjf parallel-20201222.tar.bz2
+    WORKDIR /parallel/parallel-20201222 
+    RUN ./configure 
+    RUN make 
+    RUN make install 
+    RUN make clean
+    RUN mkdir /root/.parallel
+    RUN touch /root/.parallel/will-cite
+    WORKDIR /parallel
+    RUN rm -rf /parallel-20201222
+    RUN rm -rf /parallel-20201222.tar.bz2
+
+#ENV PATH=$PATH:/parallel-20201222/src
+#
+     #graphviz default-jdk # for nextflow
+# to install nextflow
+#    apt-get -y install default-jdk graphviz curl 
+#    cd / 
+#    curl -s https://get.nextflow.io | bash
+#    chmod a+rx /nextflow
+
