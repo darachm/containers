@@ -1,0 +1,31 @@
+Bootstrap: localimage
+#From: /home/zed/.singularity/bioinfmunger.sif
+From: SEDmeTObase
+
+%labels
+
+    MAINTAINER darachm
+    NOTES kalign3
+
+%help
+
+%environment
+
+%post
+
+    apt-get update 
+
+    apt-get install -y libtool 
+
+    git clone https://github.com/TimoLassmann/kalign.git
+    cd kalign
+    ./autogen.sh
+    ./configure --disable-dependency-tracking
+    make
+    make check
+    make install
+
+%test
+
+    kalign -h
+
