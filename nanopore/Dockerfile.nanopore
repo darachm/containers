@@ -1,0 +1,83 @@
+##### GUPPY
+FROM darachm/cuda-tensorflow:cuda-py-tf2.5.2 AS guppy-base
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        wget gnupg2 lsb-release
+    ARG PLATFORM=$(lsb_release -cs)
+    RUN wget -O- https://mirror.oxfordnanoportal.com/apt/ont-repo.pub | apt-key add -
+    RUN echo "deb http://mirror.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list
+
+FROM guppy-base AS guppy-cpu
+    RUN apt-get update && apt-get -y install --no-install-recommends ont-guppy-cpu 
+
+FROM guppy-base AS guppy-gpu
+    RUN apt-get update && apt-get -y install --no-install-recommends ont-guppy
+
+##### MEDAKA
+FROM darachm/cuda-tensorflow:cuda-py-tf2.5.2 AS medaka
+    ARG DEBIAN_FRONTEND="noninteractive"
+    #RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+    
+    ENV PATH=$PATH:/htslib/htslib-1.13:/samtools/samtools-1.14:/bcftools/bcftools-1.13:/minimap2:/parallel-20201222/src 
+    
+    #RUN apt-get update && apt-get -y install --no-install-recommends \
+    #    wget gnupg2 lsb-release
+    #    export PLATFORM=$(lsb_release -cs)
+    #    wget -O- https://mirror.oxfordnanoportal.com/apt/ont-repo.pub | apt-key add -
+    #    echo "deb http://mirror.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list
+    #    apt-get update
+    
+    RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.[0-9] 99
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        make gcc zlib1g-dev libbz2-dev liblzma-dev \
+        libcurl4 libcurl4-openssl-dev git git-lfs file autoconf libncurses5-dev
+    RUN git lfs install
+    
+    WORKDIR /htslib
+    RUN wget https://github.com/samtools/htslib/releases/download/1.13/htslib-1.13.tar.bz2
+    RUN tar -vxjf htslib-1.13.tar.bz2
+    WORKDIR /htslib/htslib-1.13
+    RUN make 
+    WORKDIR /
+    
+    WORKDIR /samtools
+    RUN wget https://github.com/samtools/samtools/releases/download/1.14/samtools-1.14.tar.bz2
+    RUN tar -xvjf samtools-1.14.tar.bz2 && cd samtools-1.14 && ./configure --prefix=/usr && make && make install
+    WORKDIR /
+
+    WORKDIR /parallel
+    RUN wget https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2
+    RUN tar -xvjf parallel-20201222.tar.bz2
+    WORKDIR /parallel/parallel-20201222 
+    RUN ./configure && make && make install && make clean
+    RUN mkdir /root/.parallel && touch /root/.parallel/will-cite
+    WORKDIR /parallel
+    #RUN rm -rf /parallel-20201222 && rm -rf /parallel-20201222.tar.bz2
+    WORKDIR /
+
+    WORKDIR /bcftools
+    RUN wget https://github.com/samtools/bcftools/releases/download/1.13/bcftools-1.13.tar.bz2
+    RUN tar -vxjf bcftools-1.13.tar.bz2
+    WORKDIR /bcftools/bcftools-1.13
+    RUN make
+    WORKDIR /
+
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        bzip2 g++ zlib1g-dev libbz2-dev liblzma-dev libffi-dev \
+        libncurses5-dev libcurl4-gnutls-dev libssl-dev curl \
+        make cmake wget python3-all-dev python3-virtualenv python3-venv
+    
+    RUN python3 -m pip install medaka==1.5.0
+    #    cd /
+    #    git clone https://github.com/nanoporetech/medaka.git
+    #    cd medaka
+    #    sed -i 's/tensorflow~=2.5.2/tensorflow~=2.5.1/' requirements.txt # already installed 
+    #    sed -i 's/tensorflow/tensorflow-gpu/' requirements.txt
+    #    make install
+    ##    python3 -m easy_install /medaka/dist/medaka-1.4.4-py3.6-linux-x86_64.egg
+    
+    WORKDIR /minimap2
+    RUN git clone https://github.com/lh3/minimap2 /minimap2 && cd /minimap2 && make 
+    
+    #    cd /medaka
+    #    . ./venv/bin/activate
+
