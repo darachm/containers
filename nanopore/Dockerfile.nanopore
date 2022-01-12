@@ -1,19 +1,20 @@
 ##### GUPPY
-FROM darachm/cuda-tensorflow:cuda-py-tf2.5.2 AS guppy-base
+FROM darachm/cuda-tensorflow:cuda-11-2-py-3-9-tf-2-6-2 AS guppy-base
     RUN apt-get update && apt-get -y install --no-install-recommends \
-        wget gnupg2 lsb-release
-    ARG PLATFORM=$(lsb_release -cs)
+        wget gnupg2 lsb-release apt-utils
     RUN wget -O- https://mirror.oxfordnanoportal.com/apt/ont-repo.pub | apt-key add -
-    RUN echo "deb http://mirror.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list
+    RUN export PLATFORM=$(lsb_release -cs) && echo "deb http://mirror.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list
 
 FROM guppy-base AS guppy-cpu
-    RUN apt-get update && apt-get -y install --no-install-recommends ont-guppy-cpu 
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        ont-guppy-cpu 
 
 FROM guppy-base AS guppy-gpu
-    RUN apt-get update && apt-get -y install --no-install-recommends ont-guppy
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        ont-guppy
 
 ##### MEDAKA
-FROM darachm/cuda-tensorflow:cuda-py-tf2.5.2 AS medaka
+FROM darachm/cuda-tensorflow:cuda-11-2-py-3-9-tf-2-5-2 AS medaka
     ARG DEBIAN_FRONTEND="noninteractive"
     #RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
     
@@ -26,7 +27,7 @@ FROM darachm/cuda-tensorflow:cuda-py-tf2.5.2 AS medaka
     #    echo "deb http://mirror.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list
     #    apt-get update
     
-    RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.[0-9] 99
+    RUN update-alternatives --install /usr/bin/python python '/usr/bin/python3.[0-9]' 99
     RUN apt-get update && apt-get -y install --no-install-recommends \
         make gcc zlib1g-dev libbz2-dev liblzma-dev \
         libcurl4 libcurl4-openssl-dev git git-lfs file autoconf libncurses5-dev
@@ -65,6 +66,9 @@ FROM darachm/cuda-tensorflow:cuda-py-tf2.5.2 AS medaka
         bzip2 g++ zlib1g-dev libbz2-dev liblzma-dev libffi-dev \
         libncurses5-dev libcurl4-gnutls-dev libssl-dev curl \
         make cmake wget python3-all-dev python3-virtualenv python3-venv
+
+    WORKDIR /minimap2
+    RUN git clone https://github.com/lh3/minimap2 /minimap2 && cd /minimap2 && make 
     
     RUN python3 -m pip install medaka==1.5.0
     #    cd /
@@ -75,8 +79,6 @@ FROM darachm/cuda-tensorflow:cuda-py-tf2.5.2 AS medaka
     #    make install
     ##    python3 -m easy_install /medaka/dist/medaka-1.4.4-py3.6-linux-x86_64.egg
     
-    WORKDIR /minimap2
-    RUN git clone https://github.com/lh3/minimap2 /minimap2 && cd /minimap2 && make 
     
     #    cd /medaka
     #    . ./venv/bin/activate

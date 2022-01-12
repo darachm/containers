@@ -7,6 +7,7 @@ RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 RUN apt-get update 
 
 RUN apt-get install -y --no-install-recommends \
+    lsb-release apt-utils \
     gnupg2 software-properties-common git g++ gcc make gdb \
     wget curl gzip bzip2 lzma pigz xz-utils \
     gawk mawk perl \

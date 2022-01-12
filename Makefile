@@ -11,38 +11,69 @@ docker-$(1)-$(2) : $(1)/Dockerfile.$(1)
 		-t $$(username)/$(1):$(2) \
 		$(1)
 endef
+define docker-push
+docker-push-$(1)-$(2) : docker-login docker-$(1)-$(2)
+	sudo docker push --all-tags $$(username)/$(1)
+endef
+define singularity-builder
+singularity-$(1)-$(2) : docker-push-$(1)-$(2)
+	sudo singularity pull -F docker://$$(username)/$(1):$(2) 
+endef
 
-cuda-tensorflow_tags = cuda cuda-py cuda-py-tf \
-		cuda-2004 cuda-1804 \
-		cuda-11-5-py-3-9-tf-2-7-0 \
-		cuda-11-2-py-3-9-tf-2-6-2 \
-		cuda-11-2-py-3-9-tf-2-5-2 \
-		cuda-11-0-py-3-9-tf-2-4-4
+docker-login:
+	sudo docker login
+
+cuda-tensorflow_tags = $(shell cat cuda-tensorflow/Dockerfile.cuda-tensorflow | grep "FROM" | sed 's/.* AS //' )
 docker-cuda-tensorflow: $(addprefix docker-cuda-tensorflow-,$(cuda-tensorflow_tags))
 $(foreach tag,$(cuda-tensorflow_tags),\
 	$(eval $(call docker-builder,cuda-tensorflow,$(tag))) )
+$(foreach tag,$(cuda-tensorflow_tags),\
+	$(eval $(call docker-push,cuda-tensorflow,$(tag))) )
+singularity-cuda-tensorflow: $(addprefix singularity-cuda-tensorflow-,$(cuda-tensorflow_tags))
+$(foreach tag,$(cuda-tensorflow_tags),\
+	$(eval $(call singularity-builder,cuda-tensorflow,$(tag))) )
 
-r_tags = r-base r r-tidy r-tidy-db \
-	r-tidy-db-viz r-tidy-db-viz-mod r-tidy-db-viz-mod-bio
-docker-r: $(addprefix docker-r-,$(r_tags))
-$(foreach tag,$(r_tags),\
-	$(eval $(call docker-builder,r,$(tag))) )
+rr_tags = $(shell cat r/Dockerfile.rr | grep "FROM" | sed 's/.* AS //' )
+docker-rr: $(addprefix docker-rr-,$(r_tags))
+$(foreach tag,$(rr_tags),\
+	$(eval $(call docker-builder,rr,$(tag))) )
+$(foreach tag,$(rr_tags),\
+	$(eval $(call docker-push,rr,$(tag))) )
+singularity-rr: $(addprefix singularity-rr-,$(r_tags))
+$(foreach tag,$(rr_tags),\
+	$(eval $(call singularity-builder,rr,$(tag))) )
 
-bioinf_tags = bioinf-base bioinf-sam bioinf-sam-bedtools \
-	bioinf-sam-bedtools-parallel
+bioinf_tags = $(shell cat bioinf/Dockerfile.bioinf | grep "FROM" | sed 's/.* AS //' )
 docker-bioinf: $(addprefix docker-bioinf-,$(bioinf_tags))
 $(foreach tag,$(bioinf_tags),\
 	$(eval $(call docker-builder,bioinf,$(tag))) )
+$(foreach tag,$(bioinf_tags),\
+	$(eval $(call docker-push,bioinf,$(tag))) )
+singularity-bioinf: $(addprefix singularity-bioinf-,$(bioinf_tags))
+$(foreach tag,$(bioinf_tags),\
+	$(eval $(call singularity-builder,bioinf,$(tag))) )
 
-bioconda_tags = bioconda-base bioconda-pacbio 
+bioconda_tags = $(shell cat bioconda/Dockerfile.bioconda | grep "FROM" | sed 's/.* AS //' )
 docker-bioconda: $(addprefix docker-bioconda-,$(bioconda_tags)) 
 $(foreach tag,$(bioconda_tags),\
 	$(eval $(call docker-builder,bioconda,$(tag))) )
+$(foreach tag,$(bioconda_tags),\
+	$(eval $(call docker-push,bioconda,$(tag))) )
+singularity-bioconda: $(addprefix singularity-bioconda-,$(bioconda_tags))
+$(foreach tag,$(bioconda_tags),\
+	$(eval $(call singularity-builder,bioconda,$(tag))) )
 
-nanopore_tags = medaka
+nanopore_tags = guppy-gpu #$(shell cat nanopore/Dockerfile.nanopore | grep "FROM" | sed 's/.* AS //' )
 docker-nanopore: $(addprefix docker-nanopore-,$(nanopore_tags)) 
 $(foreach tag,$(nanopore_tags),\
 	$(eval $(call docker-builder,nanopore,$(tag))) )
+$(foreach tag,$(nanopore_tags),\
+	$(eval $(call docker-push,nanopore,$(tag))) )
+singularity-nanopore: $(addprefix singularity-nanopore-,$(nanopore_tags))
+$(foreach tag,$(nanopore_tags),\
+	$(eval $(call singularity-builder,nanopore,$(tag))) )
+
+all: singularity-cuda-tensorflow singularity-r singularity-bioinf singularity-bioconda singularity-nanopore
 
 ###### python
 #~/.singularity/python3.sif : */Singularity.python3 ~/.singularity/ubuntu2004.sif
@@ -58,8 +89,8 @@ $(foreach tag,$(nanopore_tags),\
 #~/.singularity/bioconda.sif : */Singularity.bioconda ~/.singularity/ubuntu2004.sif
 #	bash -c "$(default_sif_build)"
 
-~/.singularity/%.sif : */Singularity.% 
-	sudo singularity build $@ $<
+#~/.singularity/%.sif : */Singularity.% 
+#	sudo singularity build $@ $<
 
 #default_sif_build = "echo $(word 1,$^) on top of $(word 2,$^) && \
 #	sed 's/SEDmeTObase/$(subst /,\/,$(word 2,$^))/' $(word 1,$^) > tmp_recipie && \
@@ -262,5 +293,4 @@ t-coffee
 #~/.singularity/darachm-containers-jupyter-plus-tensorflow-v2.4.0-rc4-compiled.simg: ~/.singularity/darachm-containers-tensorflow-v2.4.0-rc4-compiled.simg
 
 
-all: $(all_containers)
 
