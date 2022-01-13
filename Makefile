@@ -71,7 +71,7 @@ singularity-bioconda: $(addsuffix .sif,$(addprefix ~/.singularity/bioconda-,$(bi
 $(foreach tag,$(bioconda_tags),\
 	$(eval $(call singularity-builder,bioconda,$(tag))) )
 
-nanopore_tags = medaka medaka-hack #guppy-gpu 
+nanopore_tags = medaka medaka-hack racon #guppy-gpu 
 #$(shell cat nanopore/Dockerfile.nanopore | grep "FROM" | sed 's/.* AS //' )
 docker-nanopore: $(addprefix token/docker-nanopore-,$(nanopore_tags)) 
 $(foreach tag,$(nanopore_tags),\
@@ -82,7 +82,7 @@ singularity-nanopore: $(addsuffix .sif,$(addprefix ~/.singularity/nanopore-,$(na
 $(foreach tag,$(nanopore_tags),\
 	$(eval $(call singularity-builder,nanopore,$(tag))) )
 
-all: singularity-cuda-tensorflow singularity-r singularity-bioinf singularity-bioconda singularity-nanopore
+all: singularity-cuda-tensorflow singularity-rr singularity-bioinf singularity-bioconda singularity-nanopore
 
 ###### python
 #~/.singularity/python3.sif : */Singularity.python3 ~/.singularity/ubuntu2004.sif
