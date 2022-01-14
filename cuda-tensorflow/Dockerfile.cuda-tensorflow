@@ -40,31 +40,26 @@ RUN apt-get install -y ./nvidia-machine-learning-repo-${OS}_1.0.0-1_amd64.deb
 
 FROM cuda-2004 AS cuda
 ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt-get update
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     cuda libcudnn8 libcudnn8-dev
 
 FROM cuda-2004 AS cuda-11-5
 ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt-get update
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     cuda-11-5 libcudnn8 libcudnn8-dev
 
 FROM cuda-2004 AS cuda-11-2
 ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt-get update
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     cuda-11-2 libcudnn8 libcudnn8-dev
 
 FROM cuda-2004 AS cuda-11-0
 ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt-get update
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     cuda-11-0 libcudnn8 libcudnn8-dev
 
 #FR OM cuda-base AS cuda-10-1
 #ARG DEBIAN_FRONTEND="noninteractive"
-#RUN apt-get update
 #RUN apt-get install --no-install-recommends -y \
 #    cuda-11-0 libcudnn8 libcudnn8-dev
 
@@ -72,27 +67,27 @@ RUN apt-get install --no-install-recommends -y \
 
 FROM cuda AS cuda-py
 ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     python3 python3-pip 
 
 FROM cuda-11-5 AS cuda-11-5-py-3-9
 ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     python3.9 python3-pip 
 
 FROM cuda-11-2 AS cuda-11-2-py-3-9
 ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     python3.9 python3-pip 
 
 FROM cuda-11-2 AS cuda-11-2-py-3-8
 ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     python3.8 python3-pip 
 
 FROM cuda-11-0 AS cuda-11-0-py-3-9
 ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     python3.9 python3-pip 
 
 ##### cuda-py-tf
@@ -123,7 +118,6 @@ RUN python3 -m pip install tensorflow==2.5.2 \
 FROM cuda-11-0-py-3-9 AS cuda-11-0-py-3-9-tf-2-4-4
 ARG DEBIAN_FRONTEND="noninteractive"
 RUN python3 -m pip install tensorflow==2.4.4
-
 
 
 #FR OM cuda-11-0 AS cuda-11-0-py-3-9

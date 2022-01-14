@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 RUN apt-get update 
 
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     lsb-release apt-utils \
     gnupg2 software-properties-common git g++ gcc make gdb \
     wget curl gzip bzip2 lzma pigz xz-utils \
@@ -24,7 +24,7 @@ RUN tar -xvjf samtools-1.14.tar.bz2 && cd samtools-1.14 && ./configure --prefix=
 
 FROM bioinf-sam AS bioinf-sam-bedtools
 
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     bedtools
 
 FROM bioinf-sam-bedtools AS bioinf-sam-bedtools-parallel
@@ -46,7 +46,7 @@ FROM bioinf-sam-bedtools AS bioinf-sam-bedtools-parallel
 #
      #graphviz default-jdk # for nextflow
 # to install nextflow
-#    apt-get -y install default-jdk graphviz curl 
+#    apt-get update && apt-get -y install default-jdk graphviz curl 
 #    cd / 
 #    curl -s https://get.nextflow.io | bash
 #    chmod a+rx /nextflow

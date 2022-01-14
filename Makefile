@@ -90,6 +90,7 @@ token/docker-nanopore-guppy-gpu: token/docker-push-cuda-tensorflow-cuda-11-2-py-
 token/docker-nanopore-guppy-cpu: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-9-tf-2-6-2
 token/docker-nanopore-racon: token/docker-push-bioinf-bioinf-sam-bedtools-parallel
 token/docker-bioconda: token/docker-push-bioinf-bioinf-sam
+token/docker-kalign-bioinf-kalign: token/docker-push-bioinf-bioinf-sam-bedtools-parallel
 
 #token/docker-push-itermae-plus: token/docker-login 
 #	sudo docker push $(username)/itermae:plus
@@ -106,6 +107,15 @@ $(foreach tag,starcode-1-4,\
 singularity-starcode: $(addsuffix .sif,$(addprefix ~/.singularity/starcode-,starcode-1-4))
 $(foreach tag,starcode-1-4,\
 	$(eval $(call singularity-builder,starcode,$(tag))) )
+
+docker-kalign: $(addprefix token/docker-kalign-,bioinf-kalign) 
+$(foreach tag,bioinf-kalign,\
+	$(eval $(call docker-builder,kalign,$(tag))) )
+$(foreach tag,bioinf-kalign,\
+	$(eval $(call docker-push,kalign,$(tag))) )
+singularity-kalign: $(addsuffix .sif,$(addprefix ~/.singularity/kalign-,bioinf-kalign))
+$(foreach tag,bioinf-kalign,\
+	$(eval $(call singularity-builder,kalign,$(tag))) )
 
 docker-lh3-aligners: $(addprefix token/docker-lh3-aligners-,minimap2-bwa-bwamem2) 
 $(foreach tag,minimap2-bwa-bwamem2,\
