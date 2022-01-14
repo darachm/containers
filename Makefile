@@ -84,16 +84,82 @@ singularity-nanopore: $(addsuffix .sif,$(addprefix ~/.singularity/nanopore-,$(na
 $(foreach tag,$(nanopore_tags),\
 	$(eval $(call singularity-builder,nanopore,$(tag))) )
 
+
 token/docker-nanopore-medaka: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-8-tf-2-5-2
 token/docker-nanopore-guppy-gpu: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-9-tf-2-6-2
 token/docker-nanopore-guppy-cpu: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-9-tf-2-6-2
 token/docker-nanopore-racon: token/docker-push-bioinf-bioinf-sam-bedtools-parallel
 token/docker-bioconda: token/docker-push-bioinf-bioinf-sam
-token/docker-rr-r-base: token/docker-push-ubuntu2004
-token/docker-bioinf-bioinf-base: token/docker-push-ubuntu2004
-token/docker-cuda-base: token/docker-push-ubuntu2004
 
-all: singularity-cuda-tensorflow singularity-rr singularity-bioinf singularity-bioconda singularity-nanopore
+#token/docker-push-itermae-plus: token/docker-login 
+#	sudo docker push $(username)/itermae:plus
+#	touch $$@
+#$(eval $(call singularity-builder,itermae,plus))
+~/.singularity/itermae-plus.sif : #token/docker-push-itermae-plus
+	sudo singularity pull -F $@ docker://$(username)/itermae:plus 
+
+docker-starcode: $(addprefix token/docker-starcode-,starcode-1-4) 
+$(foreach tag,starcode-1-4,\
+	$(eval $(call docker-builder,starcode,$(tag))) )
+$(foreach tag,starcode-1-4,\
+	$(eval $(call docker-push,starcode,$(tag))) )
+singularity-starcode: $(addsuffix .sif,$(addprefix ~/.singularity/starcode-,starcode-1-4))
+$(foreach tag,starcode-1-4,\
+	$(eval $(call singularity-builder,starcode,$(tag))) )
+
+docker-lh3-aligners: $(addprefix token/docker-lh3-aligners-,minimap2-bwa-bwamem2) 
+$(foreach tag,minimap2-bwa-bwamem2,\
+	$(eval $(call docker-builder,lh3-aligners,$(tag))) )
+$(foreach tag,minimap2-bwa-bwamem2,\
+	$(eval $(call docker-push,lh3-aligners,$(tag))) )
+singularity-lh3-aligners: $(addsuffix .sif,$(addprefix ~/.singularity/lh3-aligners-,minimap2-bwa-bwamem2))
+$(foreach tag,minimap2-bwa-bwamem2,\
+	$(eval $(call singularity-builder,lh3-aligners,$(tag))) )
+
+docker-lh3-aligners: $(addprefix token/docker-lh3-aligners-,minimap2-bwa-bwamem2) 
+$(foreach tag,minimap2-bwa-bwamem2,\
+	$(eval $(call docker-builder,lh3-aligners,$(tag))) )
+$(foreach tag,minimap2-bwa-bwamem2,\
+	$(eval $(call docker-push,lh3-aligners,$(tag))) )
+singularity-lh3-aligners: $(addsuffix .sif,$(addprefix ~/.singularity/lh3-aligners-,minimap2-bwa-bwamem2))
+$(foreach tag,minimap2-bwa-bwamem2,\
+	$(eval $(call singularity-builder,lh3-aligners,$(tag))) )
+
+docker-htseq: $(addprefix token/docker-htseq-,htseq) 
+$(foreach tag,htseq,\
+	$(eval $(call docker-builder,htseq,$(tag))) )
+$(foreach tag,htseq,\
+	$(eval $(call docker-push,htseq,$(tag))) )
+singularity-htseq: $(addsuffix .sif,$(addprefix ~/.singularity/htseq-,htseq))
+$(foreach tag,htseq,\
+	$(eval $(call singularity-builder,htseq,$(tag))) )
+
+#token/docker-push-itermae-plus: token/docker-login 
+#	sudo docker push $(username)/itermae:plus
+#	touch $$@
+#$(eval $(call singularity-builder,itermae,plus))
+~/.singularity/itermae-plus.sif : #token/docker-push-itermae-plus
+	sudo singularity pull -F $@ docker://$(username)/itermae:plus 
+
+
+
+
+all: singularity-cuda-tensorflow singularity-rr singularity-bioinf \
+	singularity-bioconda singularity-nanopore \
+	~/.singularity/itermae-plus.sif \
+	singularity-starcode singularity-lh3-aligners singularity-htseq
+
+#token/docker-push-itermae-plus: token/docker-login 
+#	sudo docker push $(username)/itermae:plus
+#	touch $$@
+#$(eval $(call singularity-builder,itermae,plus))
+~/.singularity/itermae-plus.sif : #token/docker-push-itermae-plus
+	sudo singularity pull -F $@ docker://$(username)/itermae:plus 
+
+
+
+
+
 
 ###### python
 #~/.singularity/python3.sif : */Singularity.python3 ~/.singularity/ubuntu2004.sif

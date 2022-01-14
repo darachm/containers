@@ -1,0 +1,31 @@
+FROM ubuntu:20.04 AS minimap2-bwa-bwamem2
+
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+ARG DEBIAN_FRONTEND="noninteractive"
+
+RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+RUN apt-get update && apt-get -y install --no-install-recommends \
+    make git gcc g++ zlib1g-dev ca-certificates
+
+WORKDIR /
+RUN git clone https://github.com/lh3/minimap2
+WORKDIR /minimap2
+RUN make
+WORKDIR /
+
+WORKDIR /
+RUN git clone https://github.com/lh3/bwa
+WORKDIR /bwa
+RUN make
+WORKDIR /
+
+WORKDIR /
+RUN git clone https://github.com/bwa-mem2/bwa-mem2 --recurse-submodules
+WORKDIR /bwa-mem2
+RUN make
+WORKDIR /
+
+ENV PATH=${PATH}:/bwa:/bwa-mem2:/minimap2
+
+    

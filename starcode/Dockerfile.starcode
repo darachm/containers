@@ -1,0 +1,30 @@
+FROM ubuntu:20.04 AS starcode-1-4
+ARG DEBIAN_FRONTEND="noninteractive"
+
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
+RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+RUN apt-get update && apt-get install -y \
+    apt-transport-https software-properties-common 
+RUN apt-get update && apt-get -y install --no-install-recommends \
+    git g++ gcc make mawk wget tar python3 pigz gzip xz-utils
+RUN update-alternatives --install /usr/bin/python python '/usr/bin/python3' 99
+
+RUN git clone https://github.com/gui11aume/starcode
+WORKDIR /starcode
+#git checkout master
+RUN git checkout 1.4 && make && mv starcode /usr/local/bin/starcode && mv starcode-umi /usr/local/bin/starcode-umi
+WORKDIR /
+
+    # Installing parallel from source, as the latest in ubuntu's pkgs is
+    # from 2016 and is buggin out
+WORKDIR /
+RUN wget https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2
+RUN tar -xvjf parallel-20201222.tar.bz2
+WORKDIR /parallel-20201222
+RUN ./configure && make && make install
+RUN echo "will cite\n" | parallel --citation \
+    || echo "why is this a return value of 1"
+# yay GNU parallel
+
