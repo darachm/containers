@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 AS starcode-1-4
+FROM ubuntu:20.04 AS latest
 ARG DEBIAN_FRONTEND="noninteractive"
 
 ENV LC_ALL=C.UTF-8
@@ -14,7 +14,7 @@ RUN update-alternatives --install /usr/bin/python python '/usr/bin/python3' 99
 RUN git clone https://github.com/gui11aume/starcode
 WORKDIR /starcode
 #git checkout master
-RUN git checkout 1.4 && make && mv starcode /usr/local/bin/starcode && mv starcode-umi /usr/local/bin/starcode-umi
+RUN git checkout master && make && mv starcode /usr/local/bin/starcode && mv starcode-umi /usr/local/bin/starcode-umi
 WORKDIR /
 
     # Installing parallel from source, as the latest in ubuntu's pkgs is

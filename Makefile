@@ -92,20 +92,14 @@ token/docker-nanopore-racon: token/docker-push-bioinf-bioinf-sam-bedtools-parall
 token/docker-bioconda: token/docker-push-bioinf-bioinf-sam
 token/docker-kalign-bioinf-kalign: token/docker-push-bioinf-bioinf-sam-bedtools-parallel
 
-#token/docker-push-itermae-plus: token/docker-login 
-#	sudo docker push $(username)/itermae:plus
-#	touch $$@
-#$(eval $(call singularity-builder,itermae,plus))
-~/.singularity/itermae-plus.sif : #token/docker-push-itermae-plus
-	sudo singularity pull -F $@ docker://$(username)/itermae:plus 
 
-docker-starcode: $(addprefix token/docker-starcode-,starcode-1-4) 
-$(foreach tag,starcode-1-4,\
+docker-starcode: $(addprefix token/docker-starcode-,latest) 
+$(foreach tag,latest,\
 	$(eval $(call docker-builder,starcode,$(tag))) )
-$(foreach tag,starcode-1-4,\
+$(foreach tag,latest,\
 	$(eval $(call docker-push,starcode,$(tag))) )
-singularity-starcode: $(addsuffix .sif,$(addprefix ~/.singularity/starcode-,starcode-1-4))
-$(foreach tag,starcode-1-4,\
+singularity-starcode: $(addsuffix .sif,$(addprefix ~/.singularity/starcode-,latest))
+$(foreach tag,latest,\
 	$(eval $(call singularity-builder,starcode,$(tag))) )
 
 docker-kalign: $(addprefix token/docker-kalign-,bioinf-kalign) 
@@ -116,15 +110,6 @@ $(foreach tag,bioinf-kalign,\
 singularity-kalign: $(addsuffix .sif,$(addprefix ~/.singularity/kalign-,bioinf-kalign))
 $(foreach tag,bioinf-kalign,\
 	$(eval $(call singularity-builder,kalign,$(tag))) )
-
-docker-lh3-aligners: $(addprefix token/docker-lh3-aligners-,minimap2-bwa-bwamem2) 
-$(foreach tag,minimap2-bwa-bwamem2,\
-	$(eval $(call docker-builder,lh3-aligners,$(tag))) )
-$(foreach tag,minimap2-bwa-bwamem2,\
-	$(eval $(call docker-push,lh3-aligners,$(tag))) )
-singularity-lh3-aligners: $(addsuffix .sif,$(addprefix ~/.singularity/lh3-aligners-,minimap2-bwa-bwamem2))
-$(foreach tag,minimap2-bwa-bwamem2,\
-	$(eval $(call singularity-builder,lh3-aligners,$(tag))) )
 
 docker-lh3-aligners: $(addprefix token/docker-lh3-aligners-,minimap2-bwa-bwamem2) 
 $(foreach tag,minimap2-bwa-bwamem2,\
@@ -150,7 +135,13 @@ $(foreach tag,htseq,\
 #$(eval $(call singularity-builder,itermae,plus))
 ~/.singularity/itermae-plus.sif : #token/docker-push-itermae-plus
 	sudo singularity pull -F $@ docker://$(username)/itermae:plus 
-
+#
+#token/docker-push-itermae-plus: token/docker-login 
+#	sudo docker push $(username)/itermae:plus
+#	touch $$@
+#$(eval $(call singularity-builder,itermae,plus))
+#~/.singularity/itermae-plus.sif : #token/docker-push-itermae-plus
+#	sudo singularity pull -F $@ docker://$(username)/itermae:plus 
 
 
 
@@ -158,14 +149,6 @@ all: singularity-cuda-tensorflow singularity-rr singularity-bioinf \
 	singularity-bioconda singularity-nanopore \
 	~/.singularity/itermae-plus.sif \
 	singularity-starcode singularity-lh3-aligners singularity-htseq
-
-#token/docker-push-itermae-plus: token/docker-login 
-#	sudo docker push $(username)/itermae:plus
-#	touch $$@
-#$(eval $(call singularity-builder,itermae,plus))
-~/.singularity/itermae-plus.sif : #token/docker-push-itermae-plus
-	sudo singularity pull -F $@ docker://$(username)/itermae:plus 
-
 
 
 
@@ -262,11 +245,11 @@ all: singularity-cuda-tensorflow singularity-rr singularity-bioinf \
 #~/.singularity/bioinf-racon.sif : */Singularity.bioinf-racon ~/.singularity/lh3-aligners.sif
 #	bash -c "$(default_sif_build)"
 
-	#medaka \
-	#miniasm \
-	#ncbi-blast \ 
-	#starcode 
-	#umi-tools ))
+#medaka \
+#miniasm \
+#ncbi-blast \ 
+#starcode 
+#umi-tools ))
 
 
 #cuda_tensorflow = $(addprefix ~/.singularity/,$(addsuffix .sif,\
@@ -303,13 +286,13 @@ all: singularity-cuda-tensorflow singularity-rr singularity-bioinf \
 #	bash -c "$(default_sif_build)"
 
 
-riding_the_bench = alignparse enrich2 mummer4 \
-canu \
-flye \
-nanopolish \
-pycoqc \
-squeakr \
-t-coffee 
+#riding_the_bench = alignparse enrich2 mummer4 \
+#canu \
+#flye \
+#nanopolish \
+#pycoqc \
+#squeakr \
+#t-coffee 
 
 
 #all_containers = \
