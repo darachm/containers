@@ -14,11 +14,8 @@ FROM guppy-base AS guppy-gpu
         ont-guppy
 
 ##### MEDAKA
-FROM darachm/cuda-tensorflow:cuda-11-2-py-3-9-tf-2-5-2 AS medaka
+FROM darachm/cuda-tensorflow:cuda-11-2-py-3-8-tf-2-5-2 AS medaka
     ARG DEBIAN_FRONTEND="noninteractive"
-    #RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
-    
-    ENV PATH=$PATH:/htslib/htslib-1.13:/samtools/samtools-1.14:/bcftools/bcftools-1.13:/minimap2:/parallel-20201222/src 
     
     #RUN apt-get update && apt-get -y install --no-install-recommends \
     #    wget gnupg2 lsb-release
@@ -27,7 +24,6 @@ FROM darachm/cuda-tensorflow:cuda-11-2-py-3-9-tf-2-5-2 AS medaka
     #    echo "deb http://mirror.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list
     #    apt-get update
     
-    RUN update-alternatives --install /usr/bin/python python '/usr/bin/python3.[0-9]' 99
     RUN apt-get update && apt-get -y install --no-install-recommends \
         make gcc zlib1g-dev libbz2-dev liblzma-dev \
         libcurl4 libcurl4-openssl-dev git git-lfs file autoconf libncurses5-dev
@@ -62,15 +58,18 @@ FROM darachm/cuda-tensorflow:cuda-11-2-py-3-9-tf-2-5-2 AS medaka
     RUN make
     WORKDIR /
 
+    RUN update-alternatives --install /usr/bin/python python '/usr/bin/python3.8' 99
+    RUN update-alternatives --install /usr/bin/python3 python3 '/usr/bin/python3.8' 99
     RUN apt-get update && apt-get -y install --no-install-recommends \
         bzip2 g++ zlib1g-dev libbz2-dev liblzma-dev libffi-dev \
         libncurses5-dev libcurl4-gnutls-dev libssl-dev curl \
-        make cmake wget python3-all-dev python3-virtualenv python3-venv
+        make cmake wget python3-all-dev python3-virtualenv python3.8-venv
 
     WORKDIR /minimap2
     RUN git clone https://github.com/lh3/minimap2 /minimap2 && cd /minimap2 && make 
+    WORKDIR /
     
-    RUN python3 -m pip install medaka==1.5.0
+    RUN python3.8 -m pip install medaka==1.5.0
     #    cd /
     #    git clone https://github.com/nanoporetech/medaka.git
     #    cd medaka
@@ -79,7 +78,32 @@ FROM darachm/cuda-tensorflow:cuda-11-2-py-3-9-tf-2-5-2 AS medaka
     #    make install
     ##    python3 -m easy_install /medaka/dist/medaka-1.4.4-py3.6-linux-x86_64.egg
     
+    ENV PATH=$PATH:/htslib/htslib-1.13:/samtools/samtools-1.14:/bcftools/bcftools-1.13:/minimap2:/parallel-20201222/src 
     
     #    cd /medaka
     #    . ./venv/bin/activate
+
+
+FROM medaka AS medaka-hack
+    ARG DEBIAN_FRONTEND="noninteractive"
+    RUN rm /usr/local/lib/python3.8/dist-packages/tensorflow/core/kernels/libtfkernel_sobol_op.so
+
+FROM darachm/bioinf:bioinf-sam-bedtools-parallel AS racon
+    ARG DEBIAN_FRONTEND="noninteractive"
+
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        build-essential cmake git zlib1g-dev libbz2-dev liblzma-dev 
+
+    WORKDIR /minimap2
+    RUN git clone https://github.com/lh3/minimap2 /minimap2 && cd /minimap2 && make 
+    WORKDIR /
+
+    WORKDIR /
+    RUN git clone --recursive https://github.com/lbcb-sci/racon.git 
+    WORKDIR /racon/build
+    RUN cmake -DCMAKE_BUILD_TYPE=Release .. && make
+    WORKDIR /
+
+    ENV PATH=$PATH:/racon/build/bin
+
 
