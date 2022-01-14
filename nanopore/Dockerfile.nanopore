@@ -104,6 +104,6 @@ FROM darachm/bioinf:bioinf-sam-bedtools-parallel AS racon
     RUN cmake -DCMAKE_BUILD_TYPE=Release .. && make
     WORKDIR /
 
-    ENV PATH=$PATH:/racon/build/bin
+    ENV PATH=$PATH:/racon/build/bin:/minimap2
 
 
