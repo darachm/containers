@@ -51,7 +51,7 @@ singularity-rr: $(addsuffix .sif,$(addprefix ~/.singularity/rr-,$(rr_tags)))
 $(foreach tag,$(rr_tags),\
 	$(eval $(call singularity-builder,rr,$(tag))) )
 
-bioinf_tags = bioinf-sam-bedtools-parallel
+bioinf_tags = bioinf-sam-bedtools-parallel bioinf-base
 #$(shell cat bioinf/Dockerfile.bioinf | grep "FROM" | sed 's/.* AS //' )
 docker-bioinf: $(addprefix token/docker-bioinf-,$(bioinf_tags))
 $(foreach tag,$(bioinf_tags),\
@@ -73,7 +73,7 @@ singularity-bioconda: $(addsuffix .sif,$(addprefix ~/.singularity/bioconda-,$(bi
 $(foreach tag,$(bioconda_tags),\
 	$(eval $(call singularity-builder,bioconda,$(tag))) )
 
-nanopore_tags = medaka medaka-hack racon guppy-gpu guppy-cpu 
+nanopore_tags = medaka medaka-hack racon guppy-gpu guppy-cpu nanoplot
 #$(shell cat nanopore/Dockerfile.nanopore | grep "FROM" | sed 's/.* AS //' )
 docker-nanopore: $(addprefix token/docker-nanopore-,$(nanopore_tags)) 
 $(foreach tag,$(nanopore_tags),\
@@ -90,6 +90,7 @@ token/docker-nanopore-guppy-gpu: token/docker-push-cuda-tensorflow-cuda-11-2-py-
 token/docker-nanopore-guppy-cpu: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-9-tf-2-6-2
 token/docker-nanopore-racon: token/docker-push-bioinf-bioinf-sam-bedtools-parallel
 token/docker-bioconda: token/docker-push-bioinf-bioinf-sam
+token/docker-nanopore-nanoplot: token/docker-push-bioinf-bioinf-base
 token/docker-kalign-bioinf-kalign: token/docker-push-bioinf-bioinf-sam-bedtools-parallel
 
 
@@ -101,6 +102,15 @@ $(foreach tag,latest,\
 singularity-starcode: $(addsuffix .sif,$(addprefix ~/.singularity/starcode-,latest))
 $(foreach tag,latest,\
 	$(eval $(call singularity-builder,starcode,$(tag))) )
+
+docker-flye: $(addprefix token/docker-flye-,latest) 
+$(foreach tag,latest,\
+	$(eval $(call docker-builder,flye,$(tag))) )
+$(foreach tag,latest,\
+	$(eval $(call docker-push,flye,$(tag))) )
+singularity-flye: $(addsuffix .sif,$(addprefix ~/.singularity/flye-,latest))
+$(foreach tag,latest,\
+	$(eval $(call singularity-builder,flye,$(tag))) )
 
 docker-kalign: $(addprefix token/docker-kalign-,bioinf-kalign) 
 $(foreach tag,bioinf-kalign,\
@@ -128,6 +138,11 @@ $(foreach tag,htseq,\
 singularity-htseq: $(addsuffix .sif,$(addprefix ~/.singularity/htseq-,htseq))
 $(foreach tag,htseq,\
 	$(eval $(call singularity-builder,htseq,$(tag))) )
+
+
+~/.singularity/blast.sif : 
+	sudo singularity pull -F $@ docker://ncbi/blast:2.12.0
+
 
 #token/docker-push-itermae-plus: token/docker-login 
 #	sudo docker push $(username)/itermae:plus
