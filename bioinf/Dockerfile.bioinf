@@ -51,3 +51,6 @@ FROM bioinf-sam-bedtools AS bioinf-sam-bedtools-parallel
 #    curl -s https://get.nextflow.io | bash
 #    chmod a+rx /nextflow
 
+FROM bioinf-sam-bedtools-parallel AS bioinf-sam-bedtools-parallel-biopython
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3-biopython

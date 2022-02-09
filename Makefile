@@ -51,7 +51,7 @@ singularity-rr: $(addsuffix .sif,$(addprefix ~/.singularity/rr-,$(rr_tags)))
 $(foreach tag,$(rr_tags),\
 	$(eval $(call singularity-builder,rr,$(tag))) )
 
-bioinf_tags = bioinf-sam-bedtools-parallel bioinf-base
+bioinf_tags = bioinf-sam-bedtools-parallel bioinf-base bioinf-sam-bedtools-parallel-biopython
 #$(shell cat bioinf/Dockerfile.bioinf | grep "FROM" | sed 's/.* AS //' )
 docker-bioinf: $(addprefix token/docker-bioinf-,$(bioinf_tags))
 $(foreach tag,$(bioinf_tags),\
