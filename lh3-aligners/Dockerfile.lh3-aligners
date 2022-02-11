@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 AS minimap2-bwa-bwamem2
+FROM darachm/bioinf:bioinf-sam-bedtools-parallel AS minimap2-bwa-bwamem2
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
@@ -27,5 +27,3 @@ RUN make
 WORKDIR /
 
 ENV PATH=${PATH}:/bwa:/bwa-mem2:/minimap2
-
-    

@@ -51,7 +51,8 @@ singularity-rr: $(addsuffix .sif,$(addprefix ~/.singularity/rr-,$(rr_tags)))
 $(foreach tag,$(rr_tags),\
 	$(eval $(call singularity-builder,rr,$(tag))) )
 
-bioinf_tags = bioinf-sam-bedtools-parallel bioinf-base bioinf-sam-bedtools-parallel-biopython
+bioinf_tags = bioinf-sam-bedtools-parallel bioinf-base \
+	bioinf-python-parallel bioinf-parallel 
 #$(shell cat bioinf/Dockerfile.bioinf | grep "FROM" | sed 's/.* AS //' )
 docker-bioinf: $(addprefix token/docker-bioinf-,$(bioinf_tags))
 $(foreach tag,$(bioinf_tags),\
@@ -83,6 +84,17 @@ $(foreach tag,$(nanopore_tags),\
 singularity-nanopore: $(addsuffix .sif,$(addprefix ~/.singularity/nanopore-,$(nanopore_tags)))
 $(foreach tag,$(nanopore_tags),\
 	$(eval $(call singularity-builder,nanopore,$(tag))) )
+
+
+lh3-aligners_tags = minimap2-bwa-bwamem2
+docker-lh3-aligners: $(addprefix token/docker-lh3-aligners-,$(lh3-aligners_tags))
+$(foreach tag,$(lh3-aligners_tags),\
+	$(eval $(call docker-builder,lh3-aligners,$(tag))) )
+$(foreach tag,$(lh3-aligners_tags),\
+	$(eval $(call docker-push,lh3-aligners,$(tag))) )
+singularity-lh3-aligners: $(addsuffix .sif,$(addprefix ~/.singularity/lh3-aligners-,$(lh3-aligners_tags)))
+$(foreach tag,$(lh3-aligners_tags),\
+	$(eval $(call singularity-builder,lh3-aligners,$(tag))) )
 
 
 token/docker-nanopore-medaka: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-8-tf-2-5-2
@@ -121,14 +133,7 @@ singularity-kalign: $(addsuffix .sif,$(addprefix ~/.singularity/kalign-,bioinf-k
 $(foreach tag,bioinf-kalign,\
 	$(eval $(call singularity-builder,kalign,$(tag))) )
 
-docker-lh3-aligners: $(addprefix token/docker-lh3-aligners-,minimap2-bwa-bwamem2) 
-$(foreach tag,minimap2-bwa-bwamem2,\
-	$(eval $(call docker-builder,lh3-aligners,$(tag))) )
-$(foreach tag,minimap2-bwa-bwamem2,\
-	$(eval $(call docker-push,lh3-aligners,$(tag))) )
-singularity-lh3-aligners: $(addsuffix .sif,$(addprefix ~/.singularity/lh3-aligners-,minimap2-bwa-bwamem2))
-$(foreach tag,minimap2-bwa-bwamem2,\
-	$(eval $(call singularity-builder,lh3-aligners,$(tag))) )
+
 
 docker-htseq: $(addprefix token/docker-htseq-,htseq) 
 $(foreach tag,htseq,\
