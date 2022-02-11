@@ -51,6 +51,37 @@ FROM bioinf-sam-bedtools AS bioinf-sam-bedtools-parallel
 #    curl -s https://get.nextflow.io | bash
 #    chmod a+rx /nextflow
 
-FROM bioinf-sam-bedtools-parallel AS bioinf-sam-bedtools-parallel-biopython
+FROM bioinf-base AS bioinf-parallel
+    WORKDIR /parallel
+    RUN wget https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2
+    RUN tar -xvjf parallel-20201222.tar.bz2
+    WORKDIR /parallel/parallel-20201222 
+    RUN ./configure 
+    RUN make 
+    RUN make install 
+    RUN make clean
+    RUN mkdir /root/.parallel
+    RUN touch /root/.parallel/will-cite
+    WORKDIR /parallel
+    RUN rm -rf /parallel-20201222
+    RUN rm -rf /parallel-20201222.tar.bz2
+
+FROM bioinf-base AS bioinf-python
     RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3-biopython
+        python3-biopython python3-pip
+    RUN python3 -m pip install pandas matplotlib numpy
+
+FROM bioinf-python AS bioinf-python-parallel
+    WORKDIR /parallel
+    RUN wget https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2
+    RUN tar -xvjf parallel-20201222.tar.bz2
+    WORKDIR /parallel/parallel-20201222 
+    RUN ./configure 
+    RUN make 
+    RUN make install 
+    RUN make clean
+    RUN mkdir /root/.parallel
+    RUN touch /root/.parallel/will-cite
+    WORKDIR /parallel
+    RUN rm -rf /parallel-20201222
+    RUN rm -rf /parallel-20201222.tar.bz2
