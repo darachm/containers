@@ -27,8 +27,7 @@ token/docker-login:
 	touch token/docker-login
 
 
-cuda-tensorflow_tags = cuda-11-0-py-3-9-tf-2-4-4 \
-	cuda-11-2-py-3-9-tf-2-5-2 \
+cuda-tensorflow_tags = cuda-11-2-py-3-9-tf-2-5-2 \
 	cuda-11-2-py-3-8-tf-2-5-2 \
 	cuda-11-2-py-3-9-tf-2-6-2 cuda-11-5-py-3-9-tf-2-7-0
 docker-cuda-tensorflow: $(addprefix token/docker-cuda-tensorflow-,$(cuda-tensorflow_tags))
@@ -40,7 +39,7 @@ singularity-cuda-tensorflow: $(addsuffix .sif,$(addprefix ~/.singularity/cuda-te
 $(foreach tag,$(cuda-tensorflow_tags),\
 	$(eval $(call singularity-builder,cuda-tensorflow,$(tag))) )
 
-rr_tags = r-base r-tidy-db-viz r-tidy-db-viz-mod-bio
+rr_tags = r-base r-tidy-db-viz r-tidy-db-viz-mod-bio r-tidy-db-viz-mod-bio-nvimr
 #$(shell cat r/Dockerfile.rr | grep "FROM" | sed 's/.* AS //' )
 docker-rr: $(addprefix token/docker-rr-,$(r_tags))
 $(foreach tag,$(rr_tags),\
@@ -52,7 +51,8 @@ $(foreach tag,$(rr_tags),\
 	$(eval $(call singularity-builder,rr,$(tag))) )
 
 bioinf_tags = bioinf-sam-bedtools-parallel bioinf-base \
-	bioinf-python-parallel bioinf-parallel 
+	bioinf-python-parallel bioinf-parallel  \
+	bioinf-sam-bedtools-python-parallel 
 #$(shell cat bioinf/Dockerfile.bioinf | grep "FROM" | sed 's/.* AS //' )
 docker-bioinf: $(addprefix token/docker-bioinf-,$(bioinf_tags))
 $(foreach tag,$(bioinf_tags),\
