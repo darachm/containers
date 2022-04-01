@@ -27,7 +27,8 @@ token/docker-login:
 	touch token/docker-login
 
 
-cuda-tensorflow_tags = cuda-11-2-py-3-9-tf-2-5-2 \
+cuda-tensorflow_tags = cuda-test \
+	cuda-11-2-py-3-9-tf-2-5-2 \
 	cuda-11-2-py-3-8-tf-2-5-2 \
 	cuda-11-2-py-3-9-tf-2-6-2 cuda-11-5-py-3-9-tf-2-7-0
 docker-cuda-tensorflow: $(addprefix token/docker-cuda-tensorflow-,$(cuda-tensorflow_tags))
