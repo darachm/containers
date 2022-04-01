@@ -85,6 +85,8 @@ singularity-nanopore: $(addsuffix .sif,$(addprefix ~/.singularity/nanopore-,$(na
 $(foreach tag,$(nanopore_tags),\
 	$(eval $(call singularity-builder,nanopore,$(tag))) )
 
+~/.singularity/nanopore-medaka-hack.sif: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-8-tf-2-5-2
+
 
 lh3-aligners_tags = minimap2-bwa-bwamem2
 docker-lh3-aligners: $(addprefix token/docker-lh3-aligners-,$(lh3-aligners_tags))

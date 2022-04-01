@@ -46,22 +46,22 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 FROM cuda-2004 AS cuda-11-5
 ARG DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    cuda-11-5 libcudnn8 libcudnn8-dev
+    cuda-drivers-495 cuda-11-5 libcudnn8 libcudnn8-dev
 
 FROM cuda-2004 AS cuda-11-2
 ARG DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    cuda-11-2 libcudnn8 libcudnn8-dev
+    cuda-drivers-495 cuda-11-2 libcudnn8 libcudnn8-dev
 
 FROM cuda-2004 AS cuda-11-0
 ARG DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    cuda-11-0 libcudnn8 libcudnn8-dev
+    cuda-drivers-495 cuda-11-0 libcudnn8 libcudnn8-dev
 
 #FR OM cuda-base AS cuda-10-1
 #ARG DEBIAN_FRONTEND="noninteractive"
 #RUN apt-get install --no-install-recommends -y \
-#    cuda-11-0 libcudnn8 libcudnn8-dev
+#    cuda-drivers-495 cuda-11-0 libcudnn8 libcudnn8-dev
 
 ##### cuda-py
 
