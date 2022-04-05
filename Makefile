@@ -124,8 +124,8 @@ $(foreach tag,$(lh3-aligners_tags),\
 
 token/docker-nanopore-medaka-hack.sif: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-8-tf-2-5-2
 token/docker-nanopore-medaka: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-8-tf-2-5-2
-token/docker-nanopore-guppy-gpu: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-9-tf-2-6-2
-token/docker-nanopore-guppy-cpu: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-9-tf-2-6-2
+token/docker-nanopore-guppy-gpu: token/docker-push-cuda-tensorflow-cuda-11-2 #-py-3-9-tf-2-6-2
+token/docker-nanopore-guppy-cpu: token/docker-push-bioinf-bioinf-base  #cuda-tensorflow-cuda-11-2 #-py-3-9-tf-2-6-2
 token/docker-nanopore-racon: token/docker-push-bioinf-bioinf-sam-bedtools-parallel
 token/docker-bioconda: token/docker-push-bioinf-bioinf-sam
 token/docker-nanopore-nanoplot: token/docker-push-bioinf-bioinf-base
