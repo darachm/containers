@@ -86,7 +86,29 @@ singularity-nanopore: $(addsuffix .sif,$(addprefix ~/.singularity/nanopore-,$(na
 $(foreach tag,$(nanopore_tags),\
 	$(eval $(call singularity-builder,nanopore,$(tag))) )
 
-~/.singularity/nanopore-medaka-hack.sif: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-8-tf-2-5-2
+
+
+#jupyter = $(addprefix ~/.singularity/,$(addsuffix .sif,\
+#	jupyter \
+#	extra-jupyter \
+#	bioconda-jupyter \
+#	cuda-tensorflow-v2.6.0-jupyter \
+#	))
+#jupyter = $(jupyter)
+###### jupyter
+#~/.singularity/%-jupyter.sif : */Singularity.plus-jupyter ~/.singularity/%.sif
+#	bash -c "$(default_sif_build)"
+
+jupyter_tags = jupyter jupyter-plus
+docker-jupyter: $(addprefix token/docker-jupyter-,$(jupyter_tags))
+$(foreach tag,$(jupyter_tags),\
+	$(eval $(call docker-builder,jupyter,$(tag))) )
+$(foreach tag,$(jupyter_tags),\
+	$(eval $(call docker-push,jupyter,$(tag))) )
+singularity-jupyter: $(addsuffix .sif,$(addprefix ~/.singularity/jupyter-,$(jupyter_tags)))
+$(foreach tag,$(jupyter_tags),\
+	$(eval $(call singularity-builder,jupyter,$(tag))) )
+
 
 
 lh3-aligners_tags = minimap2-bwa-bwamem2
@@ -100,6 +122,7 @@ $(foreach tag,$(lh3-aligners_tags),\
 	$(eval $(call singularity-builder,lh3-aligners,$(tag))) )
 
 
+token/docker-nanopore-medaka-hack.sif: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-8-tf-2-5-2
 token/docker-nanopore-medaka: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-8-tf-2-5-2
 token/docker-nanopore-guppy-gpu: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-9-tf-2-6-2
 token/docker-nanopore-guppy-cpu: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-9-tf-2-6-2
@@ -107,7 +130,6 @@ token/docker-nanopore-racon: token/docker-push-bioinf-bioinf-sam-bedtools-parall
 token/docker-bioconda: token/docker-push-bioinf-bioinf-sam
 token/docker-nanopore-nanoplot: token/docker-push-bioinf-bioinf-base
 token/docker-kalign-bioinf-kalign: token/docker-push-bioinf-bioinf-sam-bedtools-parallel
-
 
 docker-starcode: $(addprefix token/docker-starcode-,latest) 
 $(foreach tag,latest,\
@@ -297,16 +319,6 @@ all: singularity-cuda-tensorflow singularity-rr singularity-bioinf \
 #~/.singularity/cuda-tensorflow-v2.6.0.sif : */Singularity.cuda-tensorflow-v2.6.0 
 #	bash -c "$(default_sif_build)"
 
-#jupyter = $(addprefix ~/.singularity/,$(addsuffix .sif,\
-#	jupyter \
-#	extra-jupyter \
-#	bioconda-jupyter \
-#	cuda-tensorflow-v2.6.0-jupyter \
-#	))
-#jupyter = $(jupyter)
-###### jupyter
-#~/.singularity/%-jupyter.sif : */Singularity.plus-jupyter ~/.singularity/%.sif
-#	bash -c "$(default_sif_build)"
 
 
 #riding_the_bench = alignparse enrich2 mummer4 \
