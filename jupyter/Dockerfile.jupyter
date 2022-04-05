@@ -17,6 +17,7 @@ FROM jupyter AS jupyter-plus
         python3 -m pip install \
             pandas==1.4.1 matplotlib numpy==1.22.2 jellyfish==0.9.0 \
             sklearn regex networkx biopython pysam \
+            aplanat bokeh \
         && \
         apt autoremove -y && apt clean
 
