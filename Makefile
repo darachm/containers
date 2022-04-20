@@ -77,7 +77,11 @@ singularity-bioconda: $(addsuffix .sif,$(addprefix ~/.singularity/bioconda-,$(bi
 $(foreach tag,$(bioconda_tags),\
 	$(eval $(call singularity-builder,bioconda,$(tag))) )
 
-nanopore_tags = medaka medaka-hack racon guppy-gpu guppy-cpu nanoplot
+nanopore_tags = medaka medaka-hack racon nanoplot \
+	guppy-gpu-6.1.3 \
+	guppy-gpu-6.0.1 \
+	guppy-cpu-6.1.1 \
+	guppy-gpu-6.1.1 
 #$(shell cat nanopore/Dockerfile.nanopore | grep "FROM" | sed 's/.* AS //' )
 docker-nanopore: $(addprefix token/docker-nanopore-,$(nanopore_tags)) 
 $(foreach tag,$(nanopore_tags),\
@@ -126,8 +130,8 @@ $(foreach tag,$(lh3-aligners_tags),\
 
 token/docker-nanopore-medaka-hack.sif: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-8-tf-2-5-2
 token/docker-nanopore-medaka: token/docker-push-cuda-tensorflow-cuda-11-2-py-3-8-tf-2-5-2
-token/docker-nanopore-guppy-gpu: token/docker-push-cuda-tensorflow-cuda-11-2 #-py-3-9-tf-2-6-2
-token/docker-nanopore-guppy-cpu: token/docker-push-bioinf-bioinf-base  #cuda-tensorflow-cuda-11-2 #-py-3-9-tf-2-6-2
+token/docker-nanopore-guppy-gpu*: token/docker-push-cuda-tensorflow-cuda-11-2 #-py-3-9-tf-2-6-2
+token/docker-nanopore-guppy-cpu*: token/docker-push-bioinf-bioinf-base  #cuda-tensorflow-cuda-11-2 #-py-3-9-tf-2-6-2
 token/docker-nanopore-racon: token/docker-push-bioinf-bioinf-sam-bedtools-parallel
 token/docker-bioconda: token/docker-push-bioinf-bioinf-sam
 token/docker-nanopore-nanoplot: token/docker-push-bioinf-bioinf-base

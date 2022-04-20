@@ -5,30 +5,37 @@ FROM darachm/bioinf:bioinf-base AS nanoplot
     RUN python3 -m pip install NanoPlot
 
 ##### GUPPY
-FROM darachm/cuda-tensorflow:cuda-11-2 AS guppy-gpu
+FROM darachm/cuda-tensorflow:cuda-11-2 AS nanopore-repo
 #-py-3-9-tf-2-6-2
     RUN apt-get update && apt-get -y install --no-install-recommends \
-        wget gnupg2 lsb-release apt-utils \
+        wget gnupg2 lsb-release apt-utils curl \
         && \
-        wget -O- https://mirror.oxfordnanoportal.com/apt/ont-repo.pub | apt-key add - \
+        wget -O- https://cdn.oxfordnanoportal.com/apt/ont-repo.pub | apt-key add - \
         && \
         export PLATFORM=$(lsb_release -cs) \
         && \
-        echo "deb http://mirror.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list
-    RUN apt-get update && apt-get -y install --no-install-recommends \
-        ont-guppy=6.1.1-1~focal
+        echo "deb http://cdn.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list \
+        && \
+        mkdir /opt/ont
 
-FROM darachm/bioinf:bioinf-base AS guppy-cpu
+FROM nanopore-repo AS guppy-gpu-6.1.3
     RUN apt-get update && apt-get -y install --no-install-recommends \
-        wget gnupg2 lsb-release apt-utils \
-        && \
-        wget -O- https://mirror.oxfordnanoportal.com/apt/ont-repo.pub | apt-key add - \
-        && \
-        export PLATFORM=$(lsb_release -cs) \
-        && \
-        echo "deb http://mirror.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list
-    RUN apt-get update && apt-get -y install --no-install-recommends \
-        ont-guppy-cpu=6.1.1-1~focal
+        ont-guppy=6.1.3-1~focal
+
+FROM nanopore-repo AS guppy-gpu-6.0.1
+    RUN curl https://cdn.oxfordnanoportal.com/software/analysis/ont-guppy_6.0.1_linux64.tar.gz \
+        | tar -xzC /opt/ont 
+    ENV PATH=$PATH:/opt/ont/ont-guppy/bin
+
+FROM nanopore-repo AS guppy-gpu-6.1.1
+    RUN curl https://cdn.oxfordnanoportal.com/software/analysis/ont-guppy_6.1.1_linux64.tar.gz \
+        | tar -xzC /opt/ont 
+    ENV PATH=$PATH:/opt/ont/ont-guppy/bin
+
+FROM nanopore-repo AS guppy-cpu-6.1.1
+    RUN curl https://cdn.oxfordnanoportal.com/software/analysis/ont-guppy-cpu_6.1.1_linux64.tar.gz \
+        | tar -xzC /opt/ont 
+    ENV PATH=$PATH:/opt/ont/ont-guppy/bin
 
 ##### MEDAKA
 FROM darachm/cuda-tensorflow:cuda-11-2-py-3-8-tf-2-5-2 AS medaka
@@ -37,8 +44,8 @@ FROM darachm/cuda-tensorflow:cuda-11-2-py-3-8-tf-2-5-2 AS medaka
     #RUN apt-get update && apt-get -y install --no-install-recommends \
     #    wget gnupg2 lsb-release
     #    export PLATFORM=$(lsb_release -cs)
-    #    wget -O- https://mirror.oxfordnanoportal.com/apt/ont-repo.pub | apt-key add -
-    #    echo "deb http://mirror.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list
+    #    wget -O- https://cdn.oxfordnanoportal.com/apt/ont-repo.pub | apt-key add -
+    #    echo "deb http://cdn.oxfordnanoportal.com/apt ${PLATFORM}-stable non-free" | tee /etc/apt/sources.list.d/nanoporetech.sources.list
     #    apt-get update
     
     RUN apt-get update && apt-get -y install --no-install-recommends \
