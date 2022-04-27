@@ -4,6 +4,7 @@ SHELL = /usr/bin/bash
 # TODO figure out how to get shell variable sing cache dir into targets
 
 username=darachm
+
 define docker-builder
 token/docker-$(1)-$(2) : $(1)/Dockerfile.$(1) 
 	sudo docker build -f $(1)/Dockerfile.$(1) \
@@ -12,22 +13,36 @@ token/docker-$(1)-$(2) : $(1)/Dockerfile.$(1)
 		$(1)
 	touch $$@
 endef
+
 define docker-push
 token/docker-push-$(1)-$(2) : token/docker-login token/docker-$(1)-$(2)
 	sudo docker push $$(username)/$(1):$(2)
 	touch $$@
 endef
+
 define singularity-builder
 ~/.singularity/$(1)-$(2).sif : token/docker-push-$(1)-$(2)
 	sudo singularity pull -F $$@ docker://$$(username)/$(1):$(2) 
+endef
+
+define singularity-push-ghcr
+token/singularity-push-$(1)-$(2) : ~/.singularity/$(1)-$(2).sif 
+	singularity push $(word 1,$^) oras://ghcr.io/darachm/$(1):$(2) 
 endef
 
 token/docker-login:
 	sudo docker login
 	touch token/docker-login
 
-	#cuda-11-2-py-3-9-tf-2-5-2 \
-	#cuda-11-2-py-3-9-tf-2-6-2 \
+token/ghcr-docker-login:
+	sudo docker login ghcr.io -u ${username} --password ${GHCR_PAT}
+	touch $@
+
+token/ghcr-singularity-login:
+	singularity remote login --username ${username} --password ${GHCR_PAT} oras://ghcr.io
+	touch $@
+
+
 
 cuda-tensorflow_tags = cuda-test \
 	cuda-11-2-py-3-8-tf-2-5-2 \
