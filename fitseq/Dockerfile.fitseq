@@ -1,0 +1,8 @@
+FROM darachm/bioinf:bioinf-base AS latest
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-utils gzip xz-utils bzip2 parallel gawk perl \
+    python3 python3-pip
+
+RUN python3 -m pip install \
+    git+https://github.com/darachm/fitseq.git

@@ -179,8 +179,6 @@ singularity-kalign: $(addsuffix .sif,$(addprefix ~/.singularity/kalign-,bioinf-k
 $(foreach tag,bioinf-kalign,\
 	$(eval $(call singularity-builder,kalign,$(tag))) )
 
-
-
 docker-htseq: $(addprefix token/docker-htseq-,htseq) 
 $(foreach tag,htseq,\
 	$(eval $(call docker-builder,htseq,$(tag))) )
@@ -189,6 +187,12 @@ $(foreach tag,htseq,\
 singularity-htseq: $(addsuffix .sif,$(addprefix ~/.singularity/htseq-,htseq))
 $(foreach tag,htseq,\
 	$(eval $(call singularity-builder,htseq,$(tag))) )
+
+
+
+docker-fitseq: token/docker-push-fitseq-latest
+$(eval $(call docker-builder,fitseq,latest) )
+$(eval $(call docker-push,fitseq,latest) )
 
 
 ~/.singularity/blast.sif : 
