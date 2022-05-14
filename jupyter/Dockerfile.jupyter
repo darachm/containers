@@ -5,7 +5,9 @@ FROM darachm/bioinf:bioinf-base AS jupyter
             python3 python3-pip git libcgraph6 \
         && \
         python3 -m pip install \
-            jupyter jupyterlab \
+            markupsafe==2.0.1 \
+            jinja2==2.11.3 notebook==6.4.11 ipython==8.3.0 qtconsole==5.3.0 \
+            jupyterlab==3.4.2 \
         && \
         apt autoremove -y && apt clean
 
@@ -15,9 +17,15 @@ FROM jupyter AS jupyter-plus
             python3-biopython \
         && \
         python3 -m pip install \
-            pandas==1.4.1 matplotlib numpy==1.22.2 jellyfish==0.9.0 \
-            sklearn regex networkx biopython pysam \
-            aplanat bokeh \
+            pandas==1.4.2 matplotlib==3.5.2 numpy==1.22.3 \
+            jellyfish==0.9.0 \
+            scikit-learn==1.1.0 \
+            regex==2022.4.24 \
+            networkx==2.8 \
+            biopython==1.79 \
+            pysam==0.19.0 \
+            aplanat \
+            pillow==9.1.0 bokeh==2.4.2 \
         && \
         apt autoremove -y && apt clean
 
