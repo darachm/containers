@@ -44,11 +44,12 @@ token/ghcr-singularity-login:
 
 
 
-cuda-tensorflow_tags = cuda-test \
-	cuda-11-2-py-3-8-tf-2-5-2 \
-	cuda-11-2 \
+cuda-tensorflow_tags = \
 	cuda-11-5-py-3-9-tf-2-7-0
-docker-cuda-tensorflow: $(addprefix token/docker-cuda-tensorflow-,$(cuda-tensorflow_tags))
+	#cuda-11-2 \
+	#cuda-test \
+	#cuda-11-2-py-3-8-tf-2-5-2 
+docker-cuda-tensorflow: $(addprefix token/docker-push-cuda-tensorflow-,$(cuda-tensorflow_tags))
 $(foreach tag,$(cuda-tensorflow_tags),\
 	$(eval $(call docker-builder,cuda-tensorflow,$(tag))) )
 $(foreach tag,$(cuda-tensorflow_tags),\
@@ -59,7 +60,7 @@ $(foreach tag,$(cuda-tensorflow_tags),\
 
 rr_tags = r-base r-tidy-db-viz r-tidy-db-viz-mod-bio r-tidy-db-viz-mod-bio-nvimr
 #$(shell cat r/Dockerfile.rr | grep "FROM" | sed 's/.* AS //' )
-docker-rr: $(addprefix token/docker-rr-,$(r_tags))
+docker-rr: $(addprefix token/docker-push-rr-,$(r_tags))
 $(foreach tag,$(rr_tags),\
 	$(eval $(call docker-builder,rr,$(tag))) )
 $(foreach tag,$(rr_tags),\
@@ -68,11 +69,12 @@ singularity-rr: $(addsuffix .sif,$(addprefix ~/.singularity/rr-,$(rr_tags)))
 $(foreach tag,$(rr_tags),\
 	$(eval $(call singularity-builder,rr,$(tag))) )
 
-bioinf_tags = bioinf-sam-bedtools-parallel bioinf-base \
-	bioinf-python-parallel bioinf-parallel  \
-	bioinf-sam-bedtools-python-parallel 
+bioinf_tags = \
+	bioinf-base bioinf-python \
+	bioinf-python-parallel \
+	bioinf-sam-bedtools
 #$(shell cat bioinf/Dockerfile.bioinf | grep "FROM" | sed 's/.* AS //' )
-docker-bioinf: $(addprefix token/docker-bioinf-,$(bioinf_tags))
+docker-bioinf: $(addprefix token/docker-push-bioinf-,$(bioinf_tags))
 $(foreach tag,$(bioinf_tags),\
 	$(eval $(call docker-builder,bioinf,$(tag))) )
 $(foreach tag,$(bioinf_tags),\
@@ -83,7 +85,7 @@ $(foreach tag,$(bioinf_tags),\
 
 bioconda_tags = bioconda-pacbio
 #$(shell cat bioconda/Dockerfile.bioconda | grep "FROM" | sed 's/.* AS //' )
-docker-bioconda: $(addprefix token/docker-bioconda-,$(bioconda_tags)) 
+docker-bioconda: $(addprefix token/docker-push-bioconda-,$(bioconda_tags)) 
 $(foreach tag,$(bioconda_tags),\
 	$(eval $(call docker-builder,bioconda,$(tag))) )
 $(foreach tag,$(bioconda_tags),\
@@ -98,7 +100,7 @@ nanopore_tags = medaka medaka-hack racon nanoplot \
 	guppy-cpu-6.1.1 \
 	guppy-gpu-6.1.1 
 #$(shell cat nanopore/Dockerfile.nanopore | grep "FROM" | sed 's/.* AS //' )
-docker-nanopore: $(addprefix token/docker-nanopore-,$(nanopore_tags)) 
+docker-nanopore: $(addprefix token/docker-push-nanopore-,$(nanopore_tags)) 
 $(foreach tag,$(nanopore_tags),\
 	$(eval $(call docker-builder,nanopore,$(tag))) )
 $(foreach tag,$(nanopore_tags),\
@@ -121,7 +123,7 @@ $(foreach tag,$(nanopore_tags),\
 #	bash -c "$(default_sif_build)"
 
 jupyter_tags = jupyter jupyter-plus
-docker-jupyter: $(addprefix token/docker-jupyter-,$(jupyter_tags))
+docker-jupyter: $(addprefix token/docker-push-jupyter-,$(jupyter_tags))
 $(foreach tag,$(jupyter_tags),\
 	$(eval $(call docker-builder,jupyter,$(tag))) )
 $(foreach tag,$(jupyter_tags),\
@@ -133,7 +135,7 @@ $(foreach tag,$(jupyter_tags),\
 
 
 lh3-aligners_tags = minimap2-bwa-bwamem2
-docker-lh3-aligners: $(addprefix token/docker-lh3-aligners-,$(lh3-aligners_tags))
+docker-lh3-aligners: $(addprefix token/docker-push-lh3-aligners-,$(lh3-aligners_tags))
 $(foreach tag,$(lh3-aligners_tags),\
 	$(eval $(call docker-builder,lh3-aligners,$(tag))) )
 $(foreach tag,$(lh3-aligners_tags),\
@@ -152,7 +154,7 @@ token/docker-bioconda: token/docker-push-bioinf-bioinf-sam
 token/docker-nanopore-nanoplot: token/docker-push-bioinf-bioinf-base
 token/docker-kalign-bioinf-kalign: token/docker-push-bioinf-bioinf-sam-bedtools-parallel
 
-docker-starcode: $(addprefix token/docker-starcode-,latest) 
+docker-starcode: $(addprefix token/docker-push-starcode-,latest) 
 $(foreach tag,latest,\
 	$(eval $(call docker-builder,starcode,$(tag))) )
 $(foreach tag,latest,\
@@ -161,7 +163,7 @@ singularity-starcode: $(addsuffix .sif,$(addprefix ~/.singularity/starcode-,late
 $(foreach tag,latest,\
 	$(eval $(call singularity-builder,starcode,$(tag))) )
 
-docker-flye: $(addprefix token/docker-flye-,latest) 
+docker-flye: $(addprefix token/docker-push-flye-,latest) 
 $(foreach tag,latest,\
 	$(eval $(call docker-builder,flye,$(tag))) )
 $(foreach tag,latest,\
@@ -170,7 +172,7 @@ singularity-flye: $(addsuffix .sif,$(addprefix ~/.singularity/flye-,latest))
 $(foreach tag,latest,\
 	$(eval $(call singularity-builder,flye,$(tag))) )
 
-docker-kalign: $(addprefix token/docker-kalign-,bioinf-kalign) 
+docker-kalign: $(addprefix token/docker-push-kalign-,bioinf-kalign) 
 $(foreach tag,bioinf-kalign,\
 	$(eval $(call docker-builder,kalign,$(tag))) )
 $(foreach tag,bioinf-kalign,\
@@ -179,7 +181,7 @@ singularity-kalign: $(addsuffix .sif,$(addprefix ~/.singularity/kalign-,bioinf-k
 $(foreach tag,bioinf-kalign,\
 	$(eval $(call singularity-builder,kalign,$(tag))) )
 
-docker-htseq: $(addprefix token/docker-htseq-,htseq) 
+docker-htseq: $(addprefix token/docker-push-htseq-,htseq) 
 $(foreach tag,htseq,\
 	$(eval $(call docker-builder,htseq,$(tag))) )
 $(foreach tag,htseq,\
