@@ -16,7 +16,43 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ncurses-base ncurses-bin libncurses5-dev autoconf \
     sqlite3 csvkit graphviz
 
-FROM bioinf-base AS bioinf-sam
+FROM bioinf-base AS bioinf-python
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3-biopython python3-pip
+    RUN python3 -m pip install \
+        pandas==1.4.1 jellyfish==0.9.0 \
+        pysam==0.19.0 \
+        cycler==0.11.0 \
+        fonttools==4.33.3 \
+        jarowinkler==1.0.2 \
+        kiwisolver==1.4.2 \
+        matplotlib==3.5.2 \
+        networkx==2.8 \
+        numpy==1.22.3 \
+        packaging==21.3 \
+        Pillow==9.1.0 \
+        pyparsing==3.0.9 \
+        python-dateutil==2.8.2 \
+        rapidfuzz==2.0.11 \
+        six==1.16.0
+
+FROM bioinf-python AS bioinf-python-parallel
+    WORKDIR /parallel
+    RUN wget https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2 \
+        && \
+        tar -xvjf parallel-20201222.tar.bz2
+    WORKDIR /parallel/parallel-20201222 
+    RUN mkdir /root/.parallel \
+        && \
+        ./configure && \
+        make && \
+        make install && \
+        make clean && \
+        touch /root/.parallel/will-cite
+    #WORKDIR /parallel
+    #RUN rm -rf /parallel-20201222 /parallel-20201222.tar.bz2
+
+FROM bioinf-python-parallel AS bioinf-sam
 
 WORKDIR /sam
 RUN wget https://github.com/samtools/samtools/releases/download/1.14/samtools-1.14.tar.bz2
@@ -27,23 +63,6 @@ FROM bioinf-sam AS bioinf-sam-bedtools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bedtools
 
-FROM bioinf-sam-bedtools AS bioinf-sam-bedtools-parallel
-    WORKDIR /parallel
-    RUN wget https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2
-    RUN tar -xvjf parallel-20201222.tar.bz2
-    WORKDIR /parallel/parallel-20201222 
-    RUN ./configure 
-    RUN make 
-    RUN make install 
-    RUN make clean
-    RUN mkdir /root/.parallel
-    RUN touch /root/.parallel/will-cite
-    WORKDIR /parallel
-    RUN rm -rf /parallel-20201222
-    RUN rm -rf /parallel-20201222.tar.bz2
-
-#ENV PATH=$PATH:/parallel-20201222/src
-#
      #graphviz default-jdk # for nextflow
 # to install nextflow
 #    apt-get update && apt-get -y install default-jdk graphviz curl 
@@ -51,58 +70,3 @@ FROM bioinf-sam-bedtools AS bioinf-sam-bedtools-parallel
 #    curl -s https://get.nextflow.io | bash
 #    chmod a+rx /nextflow
 
-FROM bioinf-base AS bioinf-parallel
-    WORKDIR /parallel
-    RUN wget https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2
-    RUN tar -xvjf parallel-20201222.tar.bz2
-    WORKDIR /parallel/parallel-20201222 
-    RUN ./configure 
-    RUN make 
-    RUN make install 
-    RUN make clean
-    RUN mkdir /root/.parallel
-    RUN touch /root/.parallel/will-cite
-    WORKDIR /parallel
-    RUN rm -rf /parallel-20201222
-    RUN rm -rf /parallel-20201222.tar.bz2
-
-FROM bioinf-base AS bioinf-python
-    RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3-biopython python3-pip
-    RUN python3 -m pip install \
-        pandas==1.4.1 matplotlib numpy==1.22.2 jellyfish==0.9.0
-
-FROM bioinf-python AS bioinf-python-parallel
-    WORKDIR /parallel
-    RUN wget https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2
-    RUN tar -xvjf parallel-20201222.tar.bz2
-    WORKDIR /parallel/parallel-20201222 
-    RUN ./configure 
-    RUN make 
-    RUN make install 
-    RUN make clean
-    RUN mkdir /root/.parallel
-    RUN touch /root/.parallel/will-cite
-    WORKDIR /parallel
-    RUN rm -rf /parallel-20201222
-    RUN rm -rf /parallel-20201222.tar.bz2
-
-
-FROM bioinf-sam-bedtools AS bioinf-sam-bedtools-python-parallel
-    RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3-biopython python3-pip
-    RUN python3 -m pip install \
-        pandas==1.4.1 matplotlib numpy==1.22.2 jellyfish==0.9.0
-    WORKDIR /parallel
-    RUN wget https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2
-    RUN tar -xvjf parallel-20201222.tar.bz2
-    WORKDIR /parallel/parallel-20201222 
-    RUN ./configure 
-    RUN make 
-    RUN make install 
-    RUN make clean
-    RUN mkdir /root/.parallel
-    RUN touch /root/.parallel/will-cite
-    WORKDIR /parallel
-    RUN rm -rf /parallel-20201222
-    RUN rm -rf /parallel-20201222.tar.bz2
