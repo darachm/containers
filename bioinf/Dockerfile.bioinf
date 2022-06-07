@@ -20,7 +20,9 @@ FROM bioinf-base AS bioinf-python
     RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-biopython python3-pip
     RUN python3 -m pip install \
-        pandas==1.4.1 jellyfish==0.9.0 \
+        pandas==1.4.1 \
+        jellyfish==0.9.0 \
+        rapidfuzz==2.0.11 \
         pysam==0.19.0 \
         cycler==0.11.0 \
         fonttools==4.33.3 \
@@ -34,6 +36,7 @@ FROM bioinf-base AS bioinf-python
         pyparsing==3.0.9 \
         python-dateutil==2.8.2 \
         rapidfuzz==2.0.11 \
+        tqdm \
         six==1.16.0
 
 FROM bioinf-python AS bioinf-python-parallel
