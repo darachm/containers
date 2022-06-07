@@ -75,4 +75,8 @@ RUN Rscript -e 'BiocManager::install(version="3.14","GOSemSim",ask=F);'
 RUN Rscript -e 'BiocManager::install(version="3.14","clusterProfiler",ask=F);'
 RUN Rscript -e 'BiocManager::install(version="3.14","variancePartition",ask=F);'
 RUN Rscript -e 'BiocManager::install(version="3.14","DESeq2",ask=F);'
+RUN Rscript -e 'BiocManager::install(version="3.14","biomaRt",ask=F);'
 
+FROM r-tidy-db-viz-mod-bio AS r-tidy-db-viz-mod-bio-nvimr
+
+RUN Rscript -e 'install.packages("nvimr",dependencies=T);'
