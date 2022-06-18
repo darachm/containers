@@ -1,0 +1,21 @@
+FROM darachm/bioinf:bioinf-base AS fastqc
+
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        git perl openjdk-8-jre unzip
+
+    # file structure, all this bit, retyped from https://raw.githubusercontent.com/singularityhub/singularity-catalog/73f364556eb58d057e24fe63c71781ecf912b928/_recipes/thakk/biobase/Singularity.FastQC
+    RUN wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip && unzip fastqc_v0.11.9.zip && chmod +x FastQC/fastqc && ln -s /FastQC/fastqc /usr/bin/fastqc 
+
+
+#FROM darachm/bioinf:bioinf-base AS multiqc
+#%appinstall multiqc
+#    # copy-pasted from https://github.com/iansealy/CSD3/blob/1a4309acbbfa8692d7d297bb5fdbab393aceaf8d/singularityfiles/MultiQC.def
+#    apk --no-cache add libpng jpeg freetype python3 py3-numpy libstdc++
+#    apk --no-cache add --virtual build-dependencies build-base libpng-dev jpeg-dev freetype-dev python3-dev py3-numpy-dev
+#    pip3 install multiqc==1.10.1
+#    apk del build-dependencies
+#
+#%apprun multiqc
+#    /usr/bin/multiqc "$@"
+
+

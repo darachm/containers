@@ -44,6 +44,26 @@ token/ghcr-singularity-login:
 
 
 
+
+
+
+seq-qc_tags = \
+	fastqc
+	#cuda-11-2 \
+	#cuda-test \
+	#cuda-11-2-py-3-8-tf-2-5-2 
+docker-seq-qc: $(addprefix token/docker-push-seq-qc-,$(seq-qc_tags))
+$(foreach tag,$(seq-qc_tags),\
+	$(eval $(call docker-builder,seq-qc,$(tag))) )
+$(foreach tag,$(seq-qc_tags),\
+	$(eval $(call docker-push,seq-qc,$(tag))) )
+singularity-seq-qc: $(addsuffix .sif,$(addprefix ~/.singularity/seq-qc-,$(seq-qc_tags)))
+$(foreach tag,$(seq-qc_tags),\
+	$(eval $(call singularity-builder,seq-qc,$(tag))) )
+
+
+
+
 cuda-tensorflow_tags = \
 	cuda-11-5-py-3-9-tf-2-7-0
 	#cuda-11-2 \
