@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 FROM bioinf-base AS bioinf-python
     RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3-biopython python3-pip
+        python3-biopython python3-pip \
+        pypy3
     RUN python3 -m pip install \
         pandas==1.4.1 \
         jellyfish==0.9.0 \
