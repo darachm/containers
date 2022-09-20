@@ -92,7 +92,8 @@ $(foreach tag,$(rr_tags),\
 bioinf_tags = \
 	bioinf-base bioinf-python \
 	bioinf-python-parallel \
-	bioinf-sam-bedtools
+	bioinf-sam-bedtools \
+	bioinf-sam-bedtools-emboss-ncbi
 #$(shell cat bioinf/Dockerfile.bioinf | grep "FROM" | sed 's/.* AS //' )
 docker-bioinf: $(addprefix token/docker-push-bioinf-,$(bioinf_tags))
 $(foreach tag,$(bioinf_tags),\
