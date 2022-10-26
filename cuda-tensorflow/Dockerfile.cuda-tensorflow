@@ -18,7 +18,9 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/${ARCH}/
 RUN dpkg -i cuda-keyring_1.0-1_all.deb
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/${ARCH}/cuda-${OS}-keyring.gpg 
 RUN mv cuda-${OS}-keyring.gpg /usr/share/keyrings/cuda-archive-keyring.gpg
-RUN echo "deb [signed-by=/usr/share/keyrings/cuda-archive-keyring.gpg] https://developer.download.nvidia.com/compute/cuda/repos/${OS}/${ARCH}/ /" | tee /etc/apt/sources.list.d/cuda-${OS}-${ARCH}.list
+RUN echo "deb [signed-by=/usr/share/keyrings/cuda-archive-keyring.gpg] \
+        https://developer.download.nvidia.com/compute/cuda/repos/${OS}/${ARCH}/ /" \
+    | tee /etc/apt/sources.list.d/cuda-${OS}-${ARCH}.list
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/${ARCH}/cuda-${OS}.pin
 RUN mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600
 
@@ -38,27 +40,28 @@ RUN mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600
 #    cuda-drivers=495.29.05-1 && \
 #    cuda libcudnn8 libcudnn8-dev
 
-FROM cuda-2004 AS cuda-11-5
-ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    cuda-drivers=495.29.05-1 && \
-    apt-get install --no-install-recommends -y \
-    cuda-11-5 libcudnn8 libcudnn8-dev
-
 FROM cuda-2004 AS cuda-11-2
 ARG DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    cuda-drivers=495.29.05-1 && \
+    cuda-drivers=520.61.05-1 && \
     apt-get install --no-install-recommends -y \
-    cuda-11-2 libcudnn8 libcudnn8-dev
+    cuda-11-2=11.2.2-1 \
+    libcudnn8=8.1.1.33-1+cuda11.2 libcudnn8-dev=8.1.1.33-1+cuda11.2
 
-FROM cuda-base AS cuda-11-0-cudnn-8-0
+FROM cuda-2004 AS cuda-11-0-cudnn-8-0
 ARG DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update && apt-get install --no-install-recommends -y \
         cuda-drivers=520.61.05-1 && \
     apt-get install --no-install-recommends -y \
         cuda-11-0=11.0.3-1 \
         libcudnn8=8.0.5.39-1+cuda11.0 libcudnn8-dev=8.0.5.39-1+cuda11.0
+
+FROM cuda-2004 AS cuda-11-5
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    cuda-drivers=520.61.05-1 && \
+    apt-get install --no-install-recommends -y \
+    cuda-11-5 libcudnn8 libcudnn8-dev
 
 #FR OM cuda-base AS cuda-10-1
 #ARG DEBIAN_FRONTEND="noninteractive"

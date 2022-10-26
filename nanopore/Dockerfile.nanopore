@@ -1,8 +1,3 @@
-##### nanoplot
-FROM darachm/bioinf:bioinf-base AS nanoplot
-    RUN apt-get update && apt-get -y install --no-install-recommends \
-        python3-pip
-    RUN python3 -m pip install NanoPlot
 
 ##### GUPPY
 FROM darachm/cuda-tensorflow:cuda-11-2 AS nanopore-repo
@@ -18,24 +13,38 @@ FROM darachm/cuda-tensorflow:cuda-11-2 AS nanopore-repo
         && \
         mkdir /opt/ont
 
-FROM nanopore-repo AS guppy-gpu-6.1.3
+
+# doesn't work
+#FROM nanopore-repo AS guppy-gpu-5.0.15
+##    RUN apt-get update && apt-get -y install --no-install-recommends \
+##        ont-guppy=5.0.15-1~focal
+#    RUN wget https://cdn.oxfordnanoportal.com/software/analysis/ont_guppy_5.0.15-1~focal_amd64.deb \
+#        && \
+#        dpkg -i ont_guppy_5.0.15-1~focal_amd64.deb 
+
+FROM nanopore-repo AS guppy-gpu-6.3.8
     RUN apt-get update && apt-get -y install --no-install-recommends \
-        ont-guppy=6.1.3-1~focal
-
-FROM nanopore-repo AS guppy-gpu-6.0.1
-    RUN curl https://cdn.oxfordnanoportal.com/software/analysis/ont-guppy_6.0.1_linux64.tar.gz \
-        | tar -xzC /opt/ont 
+        ont-guppy=6.3.8-1~focal
     ENV PATH=$PATH:/opt/ont/ont-guppy/bin
 
-FROM nanopore-repo AS guppy-gpu-6.1.1
-    RUN curl https://cdn.oxfordnanoportal.com/software/analysis/ont-guppy_6.1.1_linux64.tar.gz \
-        | tar -xzC /opt/ont 
-    ENV PATH=$PATH:/opt/ont/ont-guppy/bin
-
-FROM nanopore-repo AS guppy-cpu-6.1.1
-    RUN curl https://cdn.oxfordnanoportal.com/software/analysis/ont-guppy-cpu_6.1.1_linux64.tar.gz \
-        | tar -xzC /opt/ont 
-    ENV PATH=$PATH:/opt/ont/ont-guppy/bin
+#FROM nanopore-repo AS guppy-gpu-6.1.3
+#    RUN apt-get update && apt-get -y install --no-install-recommends \
+#        ont-guppy=6.1.3-1~focal
+#
+#FROM nanopore-repo AS guppy-gpu-6.0.1
+#    RUN curl https://cdn.oxfordnanoportal.com/software/analysis/ont-guppy_6.0.1_linux64.tar.gz \
+#        | tar -xzC /opt/ont 
+#    ENV PATH=$PATH:/opt/ont/ont-guppy/bin
+#
+#FROM nanopore-repo AS guppy-gpu-6.1.1
+#    RUN curl https://cdn.oxfordnanoportal.com/software/analysis/ont-guppy_6.1.1_linux64.tar.gz \
+#        | tar -xzC /opt/ont 
+#    ENV PATH=$PATH:/opt/ont/ont-guppy/bin
+#
+#FROM nanopore-repo AS guppy-cpu-6.1.1
+#    RUN curl https://cdn.oxfordnanoportal.com/software/analysis/ont-guppy-cpu_6.1.1_linux64.tar.gz \
+#        | tar -xzC /opt/ont 
+#    ENV PATH=$PATH:/opt/ont/ont-guppy/bin
 
 ##### MEDAKA
 FROM darachm/cuda-tensorflow:cuda-11-2-py-3-8-tf-2-5-2 AS medaka
@@ -112,7 +121,7 @@ FROM medaka AS medaka-hack
     ARG DEBIAN_FRONTEND="noninteractive"
     RUN rm /usr/local/lib/python3.8/dist-packages/tensorflow/core/kernels/libtfkernel_sobol_op.so
 
-FROM darachm/bioinf:bioinf-sam-bedtools-parallel AS racon
+FROM darachm/bioinf:bioinf-sam-bedtools AS racon
     ARG DEBIAN_FRONTEND="noninteractive"
 
     RUN apt-get update && apt-get -y install --no-install-recommends \
@@ -130,4 +139,9 @@ FROM darachm/bioinf:bioinf-sam-bedtools-parallel AS racon
 
     ENV PATH=$PATH:/racon/build/bin:/minimap2
 
+##### nanoplot
+FROM darachm/bioinf:bioinf-base AS nanoplot
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        python3-pip
+    RUN python3 -m pip install NanoPlot
 
