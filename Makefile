@@ -118,10 +118,7 @@ $(foreach tag,$(bioconda_tags),\
 	$(eval $(call singularity-builder,bioconda,$(tag))) )
 
 nanopore_tags = medaka medaka-hack racon nanoplot \
-	guppy-gpu-6.1.3 \
-	guppy-gpu-6.0.1 \
-	guppy-cpu-6.1.1 \
-	guppy-gpu-6.1.1 
+	guppy-gpu-6.3.8
 #$(shell cat nanopore/Dockerfile.nanopore | grep "FROM" | sed 's/.* AS //' )
 docker-nanopore: $(addprefix token/docker-push-nanopore-,$(nanopore_tags)) 
 $(foreach tag,$(nanopore_tags),\

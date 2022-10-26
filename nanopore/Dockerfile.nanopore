@@ -142,6 +142,6 @@ FROM darachm/bioinf:bioinf-sam-bedtools AS racon
 ##### nanoplot
 FROM darachm/bioinf:bioinf-base AS nanoplot
     RUN apt-get update && apt-get -y install --no-install-recommends \
-        python3-pip
+        python3-pip python3-dev
     RUN python3 -m pip install NanoPlot
 
