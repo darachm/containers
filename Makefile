@@ -65,10 +65,11 @@ $(foreach tag,$(seq-qc_tags),\
 
 
 cuda-tensorflow_tags = \
-	cuda-11-5-py-3-9-tf-2-7-0
+	cuda-11-2-py-3-8-tf-2-5-2 \
+	#cuda-11-5-py-3-9-tf-2-7-0 \
+	#cuda-11-0-cudnn-8-0-py-3-8-tf-2-2-0
 	#cuda-11-2 \
 	#cuda-test \
-	#cuda-11-2-py-3-8-tf-2-5-2 
 docker-cuda-tensorflow: $(addprefix token/docker-push-cuda-tensorflow-,$(cuda-tensorflow_tags))
 $(foreach tag,$(cuda-tensorflow_tags),\
 	$(eval $(call docker-builder,cuda-tensorflow,$(tag))) )
