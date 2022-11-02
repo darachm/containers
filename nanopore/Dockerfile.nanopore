@@ -47,7 +47,7 @@ FROM nanopore-repo AS guppy-gpu-6.3.8
 #    ENV PATH=$PATH:/opt/ont/ont-guppy/bin
 
 ##### MEDAKA
-FROM darachm/cuda-tensorflow:cuda-11-2-py-3-8-tf-2-5-2 AS medaka
+FROM darachm/cuda-tensorflow:cuda-11-2-cudnn-8-1-py-3-8-tf-2-7-4 AS medaka
     ARG DEBIAN_FRONTEND="noninteractive"
     
     #RUN apt-get update && apt-get -y install --no-install-recommends \
@@ -100,9 +100,11 @@ FROM darachm/cuda-tensorflow:cuda-11-2-py-3-8-tf-2-5-2 AS medaka
 
     WORKDIR /minimap2
     RUN git clone https://github.com/lh3/minimap2 /minimap2 && cd /minimap2 && make 
-    WORKDIR /
     
-    RUN python3.8 -m pip install medaka==1.5.0
+    WORKDIR /
+    #RUN git clone https://github.com/nanopore/medaka
+    #WORKDIR /medaka
+    RUN python3.8 -m pip install medaka==1.7.2
     #    cd /
     #    git clone https://github.com/nanoporetech/medaka.git
     #    cd medaka
