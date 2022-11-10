@@ -133,6 +133,16 @@ $(foreach tag,$(nanopore_tags),\
 	$(eval $(call singularity-builder,nanopore,$(tag))) )
 
 
+jbrowse_tags = serve 
+#$(shell cat jbrowse/Dockerfile.jbrowse | grep "FROM" | sed 's/.* AS //' )
+docker-jbrowse: $(addprefix token/docker-push-jbrowse-,$(jbrowse_tags)) 
+$(foreach tag,$(jbrowse_tags),\
+	$(eval $(call docker-builder,jbrowse,$(tag))) )
+$(foreach tag,$(jbrowse_tags),\
+	$(eval $(call docker-push,jbrowse,$(tag))) )
+singularity-jbrowse: $(addsuffix .sif,$(addprefix ~/.singularity/jbrowse-,$(jbrowse_tags)))
+$(foreach tag,$(jbrowse_tags),\
+	$(eval $(call singularity-builder,jbrowse,$(tag))) )
 
 #jupyter = $(addprefix ~/.singularity/,$(addsuffix .sif,\
 #	jupyter \
