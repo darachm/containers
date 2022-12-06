@@ -11,7 +11,8 @@ RUN wget -qO- \
         https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
     | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
 RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
-RUN apt-get update && apt-get -y install --no-install-recommends r-base r-base-dev 
+RUN apt-get update && apt-get -y install --no-install-recommends \
+    r-base=4.2.2.20221110-1.2004.0 r-base-dev=4.2.2.20221110-1.2004.0
 
 FROM r-base AS r
 
@@ -19,14 +20,18 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
     vim gnupg2 git wget g++ gcc libxml2-dev libssl-dev \
     curl libcurl4-openssl-dev pandoc \
     libfontconfig1-dev libgit2-dev \
+    libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
+    libharfbuzz-dev libfribidi-dev \
     tmux rxvt-unicode
 RUN apt upgrade -y
 
+    #cmake \
+
 FROM r AS r-tidy
 
-RUN Rscript -e 'install.packages("tidyverse",dependencies=T);'
-RUN Rscript -e 'install.packages("magrittr",dependencies=T);'
 RUN Rscript -e 'install.packages("devtools",dependencies=T);'
+RUN Rscript -e 'install.packages("magrittr",dependencies=T);'
+RUN Rscript -e 'install.packages("tidyverse",dependencies=T);'
 
 FROM r-tidy AS r-tidy-db
 
@@ -52,30 +57,31 @@ RUN Rscript -e 'install.packages("ghibli",dependencies=T);'
 RUN Rscript -e 'install.packages("hexbin",dependencies=T);'
 RUN Rscript -e 'install.packages("ggsignif",dependencies=T);'
 RUN Rscript -e 'devtools::install_github("LKremer/ggpointdensity",dependencies=T);'
-
 RUN Rscript -e 'install.packages("EBImage",dependencies=T);'
 
 FROM r-tidy-db-viz AS r-tidy-db-viz-mod
 
+RUN Rscript -e 'install.packages("fitdistrplus",dependencies=T);'
 RUN Rscript -e 'install.packages("mcr",dependencies=T);'
 RUN Rscript -e 'install.packages("limma",dependencies=T);'
 RUN Rscript -e 'install.packages("vegan",dependencies=T);'
 RUN Rscript -e 'install.packages("randomForest",dependencies=T);'
 RUN Rscript -e 'install.packages("xgboost",dependencies=T);'
 
-
 FROM r-tidy-db-viz-mod AS r-tidy-db-viz-mod-bio
 
 RUN Rscript -e 'install.packages("BiocManager",dependencies=T);'
-RUN Rscript -e 'BiocManager::install(version="3.14",ask=F)'
-RUN Rscript -e 'BiocManager::install(version="3.14","org.Sc.sgd.db",ask=F);'
-RUN Rscript -e 'BiocManager::install(version="3.14","Biobase",ask=F);'
-RUN Rscript -e 'BiocManager::install(version="3.14","ggbio",ask=F)'
-RUN Rscript -e 'BiocManager::install(version="3.14","GOSemSim",ask=F);'
-RUN Rscript -e 'BiocManager::install(version="3.14","clusterProfiler",ask=F);'
-RUN Rscript -e 'BiocManager::install(version="3.14","variancePartition",ask=F);'
-RUN Rscript -e 'BiocManager::install(version="3.14","DESeq2",ask=F);'
-RUN Rscript -e 'BiocManager::install(version="3.14","biomaRt",ask=F);'
+RUN Rscript -e 'BiocManager::install(version="3.16",ask=F)'
+RUN Rscript -e 'BiocManager::install(version="3.16","edgeR",ask=F);'
+RUN Rscript -e 'BiocManager::install(version="3.16","org.Sc.sgd.db",ask=F);'
+RUN Rscript -e 'BiocManager::install(version="3.16","Biobase",ask=F);'
+RUN Rscript -e 'BiocManager::install(version="3.16","ggbio",ask=F)'
+RUN Rscript -e 'BiocManager::install(version="3.16","GOSemSim",ask=F);'
+RUN Rscript -e 'BiocManager::install(version="3.16","clusterProfiler",ask=F);'
+RUN Rscript -e 'BiocManager::install(version="3.16","variancePartition",ask=F);'
+RUN Rscript -e 'BiocManager::install(version="3.16","DESeq2",ask=F);'
+RUN Rscript -e 'BiocManager::install(version="3.16","biomaRt",ask=F);'
+RUN Rscript -e 'install.packages("statmod",dependencies=T);'
 
 FROM r-tidy-db-viz-mod-bio AS r-tidy-db-viz-mod-bio-nvimr
 
