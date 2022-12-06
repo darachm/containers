@@ -1,0 +1,32 @@
+FROM darachm/bioinf:bioinf-sam-bedtools-emboss-ncbi AS serve
+
+#    ENV LC_ALL=C.UTF-8
+#    ENV LANG=C.UTF-8
+#    ARG DEBIAN_FRONTEND="noninteractive"
+#    RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+#    RUN apt-get update 
+
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        wget curl software-properties-common git build-essential \
+        zlib1g-dev libpng-dev perl-doc ca-certificates libjson-perl
+    RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        nodejs
+    RUN npm install -g @jbrowse/cli serve
+
+    WORKDIR /var/www/
+    RUN jbrowse create jbrowse2
+
+    #RUN wget https://github.com/arq5x/bedtools2/releases/download/v2.30.0/bedtools.static.binary -O bedtools && chmod a+rx bedtools
+
+
+    #RUN apt-get update && apt-get -y install --no-install-recommends \
+    #    ont-guppy=6.3.8-1~focal
+    #ENV PATH=$PATH:/opt/ont/ont-guppy/bin
+
+
+#http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/. 
+
+    #RUN apt-get update && apt-get -y install --no-install-recommends \
+    #    ont-guppy=6.3.8-1~focal
+    #ENV PATH=$PATH:/opt/ont/ont-guppy/bin
