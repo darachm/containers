@@ -75,6 +75,21 @@ FROM bioinf-sam-bedtools-emboss AS bioinf-sam-bedtools-emboss-ncbi
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ncbi-blast+ ncbi-tools-bin
 
+FROM bioinf-sam-bedtools-emboss-ncbi AS bioinf-sam-bedtools-emboss-ncbi-ucsc
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    rsync
+RUN rsync -aP hgdownload.soe.ucsc.edu::genome/admin/exe/linux.x86_64/ /usr/local/bin/
+
+FROM bioinf-sam-bedtools-emboss-ncbi-ucsc AS bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    genometools
+
+FROM bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools AS bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib
+    WORKDIR /htslib
+    RUN wget https://github.com/samtools/htslib/releases/download/1.16/htslib-1.16.tar.bz2
+    RUN tar -xvjf htslib-1.16.tar.bz2 && cd htslib-1.16 && ./configure --prefix=/usr && make && make install
+
+
      #graphviz default-jdk # for nextflow
 # to install nextflow
 #    apt-get update && apt-get -y install default-jdk graphviz curl 
