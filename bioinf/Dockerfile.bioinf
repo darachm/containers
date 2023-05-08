@@ -9,7 +9,7 @@ RUN apt-get update
 RUN apt-get update && apt-get install -y --no-install-recommends \
     lsb-release apt-utils \
     gnupg2 software-properties-common git g++ gcc make gdb \
-    wget curl gzip bzip2 lzma pigz xz-utils \
+    wget curl gzip bzip2 lzma pigz xz-utils unzip \
     gawk mawk perl \
     zlib1g zlib1g-dev libbz2-dev liblz-dev liblzma-dev liblzma5 \
     libcurl4-openssl-dev \
@@ -55,13 +55,14 @@ FROM bioinf-python AS bioinf-python-parallel
         make install && \
         make clean && \
         touch /root/.parallel/will-cite
-    #WORKDIR /parallel
-    #RUN rm -rf /parallel-20201222 /parallel-20201222.tar.bz2
+    WORKDIR /
+    RUN rm -rf /parallel-20201222 /parallel-20201222.tar.bz2
 
 FROM bioinf-python-parallel AS bioinf-sam
     WORKDIR /sam
     RUN wget https://github.com/samtools/samtools/releases/download/1.14/samtools-1.14.tar.bz2
     RUN tar -xvjf samtools-1.14.tar.bz2 && cd samtools-1.14 && ./configure --prefix=/usr && make && make install
+    WORKDIR /
 
 FROM bioinf-sam AS bioinf-sam-bedtools
     RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -88,6 +89,7 @@ FROM bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools AS bioinf-sam-bedtools-emb
     WORKDIR /htslib
     RUN wget https://github.com/samtools/htslib/releases/download/1.16/htslib-1.16.tar.bz2
     RUN tar -xvjf htslib-1.16.tar.bz2 && cd htslib-1.16 && ./configure --prefix=/usr && make && make install
+    WORKDIR /
 
 
      #graphviz default-jdk # for nextflow
