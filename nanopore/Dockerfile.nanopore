@@ -22,9 +22,15 @@ FROM darachm/cuda-tensorflow:cuda-11-2 AS nanopore-repo
 #        && \
 #        dpkg -i ont_guppy_5.0.15-1~focal_amd64.deb 
 
-FROM nanopore-repo AS guppy-gpu-6.3.8
-    RUN apt-get update && apt-get -y install --no-install-recommends \
-        ont-guppy=6.3.8-1~focal
+#FROM nanopore-repo AS guppy-gpu-6.3.8
+#    RUN apt-get update && apt-get -y install --no-install-recommends \
+#        ont-guppy=6.3.8-1~focal
+#    ENV PATH=$PATH:/opt/ont/ont-guppy/bin
+
+FROM nanopore-repo AS guppy-gpu-6.4.6
+    RUN apt-get update && apt policy ont-guppy && \
+        apt-get -y install --no-install-recommends \
+            ont-guppy=6.4.6-1~focal
     ENV PATH=$PATH:/opt/ont/ont-guppy/bin
 
 #FROM nanopore-repo AS guppy-gpu-6.1.3
