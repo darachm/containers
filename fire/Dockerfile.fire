@@ -1,0 +1,30 @@
+FROM darachm/bioinf:bioinf-sam-bedtools-emboss-ncbi AS fire
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        unzip
+    WORKDIR /
+    COPY FIRE-1.1a.zip /
+    COPY pcre-7.4.zip /
+    RUN unzip pcre-7.4.zip
+    RUN unzip FIRE-1.1a.zip
+    WORKDIR /pcre-7.4
+    RUN chmod +x ./configure && ./configure && make install
+    WORKDIR /FIRE-1.1a
+    RUN chmod +x ./configure && ./configure && make install
+    ENV FIREDIR=/FIRE-1.1a
+    RUN cpan install LWP::UserAgent
+    RUN cpan install XML::RegExp
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        libexpat1-dev
+    RUN cpan install XML::Parser
+    RUN cpan install XML::Parser::PerlSAX
+    RUN cpan install XML::DOM
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        blast2
+    RUN sed -i '10s/^/\t$self->{BLAST_DIR} = "\/usr\/bin" ; #/' /FIRE-1.1a/SCRIPTS/MyBlast.pm
+    RUN chmod -R a+rx /FIRE-1.1a
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        ghostscript
+    #RUN apt-get update && apt-get install -y --no-install-recommends \
+    #    python3-biopython python3-pip \
+    #    pypy3
+

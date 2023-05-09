@@ -95,10 +95,11 @@ $(foreach tag,$(rr_tags),\
 	$(eval $(call singularity-builder,rr,$(tag))) )
 
 bioinf_tags = \
-	bioinf-base bioinf-python \
-	bioinf-python-parallel \
-	bioinf-sam-bedtools \
-	bioinf-sam-bedtools-emboss-ncbi
+	bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib
+#	bioinf-base bioinf-python \
+#	bioinf-python-parallel \
+#	bioinf-sam-bedtools \
+#	bioinf-sam-bedtools-emboss-ncbi
 #$(shell cat bioinf/Dockerfile.bioinf | grep "FROM" | sed 's/.* AS //' )
 docker-bioinf: $(addprefix token/docker-push-bioinf-,$(bioinf_tags))
 $(foreach tag,$(bioinf_tags),\
@@ -108,6 +109,18 @@ $(foreach tag,$(bioinf_tags),\
 singularity-bioinf: $(addsuffix .sif,$(addprefix ~/.singularity/bioinf-,$(bioinf_tags)))
 $(foreach tag,$(bioinf_tags),\
 	$(eval $(call singularity-builder,bioinf,$(tag))) )
+
+fire_tags = \
+	fire
+#$(shell cat bioinf/Dockerfile.bioinf | grep "FROM" | sed 's/.* AS //' )
+docker-fire: $(addprefix token/docker-push-fire-,$(fire_tags))
+$(foreach tag,$(fire_tags),\
+	$(eval $(call docker-builder,fire,$(tag))) )
+$(foreach tag,$(fire_tags),\
+	$(eval $(call docker-push,fire,$(tag))) )
+singularity-fire: $(addsuffix .sif,$(addprefix ~/.singularity/fire-,$(fire_tags)))
+$(foreach tag,$(fire_tags),\
+	$(eval $(call singularity-builder,fire,$(tag))) )
 
 bioconda_tags = bioconda-pacbio
 #$(shell cat bioconda/Dockerfile.bioconda | grep "FROM" | sed 's/.* AS //' )
@@ -121,7 +134,7 @@ $(foreach tag,$(bioconda_tags),\
 	$(eval $(call singularity-builder,bioconda,$(tag))) )
 
 nanopore_tags = medaka medaka-hack racon nanoplot \
-	guppy-gpu-6.3.8
+	guppy-gpu-6.4.6
 #$(shell cat nanopore/Dockerfile.nanopore | grep "FROM" | sed 's/.* AS //' )
 docker-nanopore: $(addprefix token/docker-push-nanopore-,$(nanopore_tags)) 
 $(foreach tag,$(nanopore_tags),\
