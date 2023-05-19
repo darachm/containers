@@ -219,6 +219,15 @@ singularity-flye: $(addsuffix .sif,$(addprefix ~/.singularity/flye-,latest))
 $(foreach tag,latest,\
 	$(eval $(call singularity-builder,flye,$(tag))) )
 
+docker-plannotate: $(addprefix token/docker-push-plannotate-,latest) 
+$(foreach tag,latest,\
+	$(eval $(call docker-builder,plannotate,$(tag))) )
+$(foreach tag,latest,\
+	$(eval $(call docker-push,plannotate,$(tag))) )
+singularity-plannotate: $(addsuffix .sif,$(addprefix ~/.singularity/plannotate-,latest))
+$(foreach tag,latest,\
+	$(eval $(call singularity-builder,plannotate,$(tag))) )
+
 docker-kalign: $(addprefix token/docker-push-kalign-,bioinf-kalign) 
 $(foreach tag,bioinf-kalign,\
 	$(eval $(call docker-builder,kalign,$(tag))) )
