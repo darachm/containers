@@ -95,7 +95,8 @@ $(foreach tag,$(rr_tags),\
 	$(eval $(call singularity-builder,rr,$(tag))) )
 
 bioinf_tags = \
-	bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib
+	bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib \
+	bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib-seqkit
 #	bioinf-base bioinf-python \
 #	bioinf-python-parallel \
 #	bioinf-sam-bedtools \
@@ -210,13 +211,17 @@ singularity-starcode: $(addsuffix .sif,$(addprefix ~/.singularity/starcode-,late
 $(foreach tag,latest,\
 	$(eval $(call singularity-builder,starcode,$(tag))) )
 
-docker-flye: $(addprefix token/docker-push-flye-,latest) 
-$(foreach tag,latest,\
+flye_tags = \
+	flye-miniasm-mash-muscle-r-pkg-try
+	#flye \
+	#flye-miniasm 
+docker-flye: $(addprefix token/docker-push-flye-,$(flye_tags)) 
+$(foreach tag,$(flye_tags),\
 	$(eval $(call docker-builder,flye,$(tag))) )
-$(foreach tag,latest,\
+$(foreach tag,$(flye_tags),\
 	$(eval $(call docker-push,flye,$(tag))) )
-singularity-flye: $(addsuffix .sif,$(addprefix ~/.singularity/flye-,latest))
-$(foreach tag,latest,\
+singularity-flye: $(addsuffix .sif,$(addprefix ~/.singularity/flye-,$(flye_tags)))
+$(foreach tag,$(flye_tags),\
 	$(eval $(call singularity-builder,flye,$(tag))) )
 
 docker-plannotate: $(addprefix token/docker-push-plannotate-,latest) 

@@ -1,5 +1,5 @@
 ##### nanoplot
-FROM darachm/bioinf:bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib AS latest
+FROM darachm/bioinf:bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib AS flye
     ARG DEBIAN_FRONTEND="noninteractive"
     RUN apt-get update && apt-get -y install --no-install-recommends \
         python3 make gcc g++ zlib1g-dev git 
@@ -8,4 +8,45 @@ FROM darachm/bioinf:bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib AS l
     RUN git clone https://github.com/fenderglass/Flye && cd Flye && make
     ENV PATH=$PATH:/Flye/bin
 
+FROM flye AS flye-miniasm
+    RUN git clone https://github.com/lh3/miniasm  && (cd miniasm  && make)
+
+FROM flye-miniasm AS flye-miniasm-mash
+    RUN wget https://github.com/marbl/Mash/releases/download/v2.3/mash-Linux64-v2.3.tar 
+    RUN tar -xf mash-Linux64-v2.3.tar
+    ENV PATH=$PATH:/mash-Linux64-v2.3
+
+FROM flye-miniasm-mash AS flye-miniasm-mash-muscle
+    RUN wget https://drive5.com/muscle/downloads3.8.31/muscle3.8.31_i86linux64.tar.gz
+    RUN tar -xzf muscle3.8.31_i86linux64.tar.gz \
+        && ln -s /muscle3.8.31_i86linux64 /usr/bin/muscle
+
+FROM flye-miniasm-mash-muscle AS flye-miniasm-mash-muscle-r
+    RUN apt-get update && apt-get install -y \
+        apt-transport-https software-properties-common dirmngr wget
+    RUN wget -qO- \
+            https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
+        | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+    RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        r-base=4.2.2.20221110-1.2004.0 r-base-dev=4.2.2.20221110-1.2004.0 \
+        r-recommended=4.2.2.20221110-1.2004.0 
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        vim gnupg2 git wget g++ gcc libxml2-dev libssl-dev \
+        curl libcurl4-openssl-dev pandoc \
+        libfontconfig1-dev libgit2-dev \
+        libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
+        libharfbuzz-dev libfribidi-dev \
+        tmux rxvt-unicode
+    #RUN apt upgrade -y
+
+FROM flye-miniasm-mash-muscle-r AS flye-miniasm-mash-muscle-r-pkg
+    RUN Rscript -e 'install.packages(c("ape","phangorn"),dependencies=T);'
+
+FROM flye-miniasm-mash-muscle-r-pkg AS flye-miniasm-mash-muscle-r-pkg-try
+    RUN python3 -m pip install \
+        edlib==1.3.9 \
+        numpy==1.24.3 \
+        scipy==1.10.1 \
+        git+https://github.com/rrwick/Trycycler.git
 
