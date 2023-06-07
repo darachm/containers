@@ -9,7 +9,8 @@ FROM darachm/bioinf:bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib AS f
     ENV PATH=$PATH:/Flye/bin
 
 FROM flye AS flye-miniasm
-    RUN git clone https://github.com/lh3/miniasm  && (cd miniasm  && make)
+    RUN git clone https://github.com/lh3/miniasm  && cd miniasm && make && cd /
+    ENV PATH=$PATH:/miniasm
 
 FROM flye-miniasm AS flye-miniasm-mash
     RUN wget https://github.com/marbl/Mash/releases/download/v2.3/mash-Linux64-v2.3.tar 
@@ -43,10 +44,18 @@ FROM flye-miniasm-mash-muscle AS flye-miniasm-mash-muscle-r
 FROM flye-miniasm-mash-muscle-r AS flye-miniasm-mash-muscle-r-pkg
     RUN Rscript -e 'install.packages(c("ape","phangorn"),dependencies=T);'
 
-FROM flye-miniasm-mash-muscle-r-pkg AS flye-miniasm-mash-muscle-r-pkg-try
+FROM flye-miniasm-mash-muscle-r-pkg AS flye-miniasm-mash-muscle-r-pkg-mm
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        make git gcc g++ zlib1g-dev ca-certificates
+    RUN cd / && git clone https://github.com/lh3/minimap2 && cd minimap2 \
+        && make && cd /
+    ENV PATH=$PATH:/minimap2
+
+FROM flye-miniasm-mash-muscle-r-pkg-mm AS flye-miniasm-mash-muscle-r-pkg-mm-try
     RUN python3 -m pip install \
         edlib==1.3.9 \
         numpy==1.24.3 \
         scipy==1.10.1 \
         git+https://github.com/rrwick/Trycycler.git
+
 
