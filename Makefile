@@ -83,7 +83,9 @@ singularity-cuda-tensorflow: $(addsuffix .sif,$(addprefix ~/.singularity/cuda-te
 $(foreach tag,$(cuda-tensorflow_tags),\
 	$(eval $(call singularity-builder,cuda-tensorflow,$(tag))) )
 
-rr_tags = r-base r-tidy-db-viz r-tidy-db-viz-mod-bio r-tidy-db-viz-mod-bio-nvimr
+rr_tags = r-base-4.3.1 \
+	r-4.3.1-tidy-db-viz-mod-bio \
+	r-4.3.1-tidy-db-viz-mod-bio-nvimr
 #$(shell cat r/Dockerfile.rr | grep "FROM" | sed 's/.* AS //' )
 docker-rr: $(addprefix token/docker-push-rr-,$(r_tags))
 $(foreach tag,$(rr_tags),\

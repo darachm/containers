@@ -92,6 +92,13 @@ FROM bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools AS bioinf-sam-bedtools-emb
     WORKDIR /
 
 
+FROM bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib AS bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib-seqkit
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        golang
+    RUN go get -v -u github.com/shenwei356/seqkit/v2/seqkit
+        go get -v -u github.com/shenwei356/seqkit/seqkit
+    WORKDIR /
+
      #graphviz default-jdk # for nextflow
 # to install nextflow
 #    apt-get update && apt-get -y install default-jdk graphviz curl 
