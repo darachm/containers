@@ -97,8 +97,8 @@ $(foreach tag,$(rr_tags),\
 	$(eval $(call singularity-builder,rr,$(tag))) )
 
 bioinf_tags = \
-	bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib-seqkit
-#	bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib \
+	bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib \
+#	bioinf-sam-bedtools-emboss-ncbi-ucsc-genometools-htslib-seqkit
 #	bioinf-base bioinf-python \
 #	bioinf-python-parallel \
 #	bioinf-sam-bedtools \
@@ -136,7 +136,8 @@ singularity-bioconda: $(addsuffix .sif,$(addprefix ~/.singularity/bioconda-,$(bi
 $(foreach tag,$(bioconda_tags),\
 	$(eval $(call singularity-builder,bioconda,$(tag))) )
 
-nanopore_tags = medaka medaka-hack racon nanoplot \
+nanopore_tags = chopper \
+	medaka medaka-hack racon nanoplot \
 	guppy-gpu-6.4.6
 #$(shell cat nanopore/Dockerfile.nanopore | grep "FROM" | sed 's/.* AS //' )
 docker-nanopore: $(addprefix token/docker-push-nanopore-,$(nanopore_tags)) 
@@ -214,7 +215,8 @@ $(foreach tag,latest,\
 	$(eval $(call singularity-builder,starcode,$(tag))) )
 
 flye_tags = \
-	flye-miniasm-mash-muscle-r-pkg-mm-try
+	flye-miniasm-mash-muscle-r-pkg-mm-try \
+	flye-miniasm-mash-muscle-r-pkg-mm-try-canu
 	#flye \
 	#flye-miniasm 
 docker-flye: $(addprefix token/docker-push-flye-,$(flye_tags)) 

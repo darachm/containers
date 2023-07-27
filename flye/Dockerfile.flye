@@ -59,3 +59,15 @@ FROM flye-miniasm-mash-muscle-r-pkg-mm AS flye-miniasm-mash-muscle-r-pkg-mm-try
         git+https://github.com/rrwick/Trycycler.git
 
 
+FROM flye-miniasm-mash-muscle-r-pkg-mm-try AS flye-miniasm-mash-muscle-r-pkg-mm-try-canu
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        wget gnupg2 perl gnuplot default-jre libgomp1
+    RUN apt-get update && apt-get -y install --no-install-recommends \
+        samtools make gcc zlib1g-dev libbz2-dev \
+        liblzma-dev libcurl4 libcurl4-openssl-dev git
+    RUN wget https://github.com/marbl/canu/releases/download/v2.2/canu-2.2.tar.xz \
+        && tar -xJf canu-2.2.tar.xz && cd canu-2.2/src \
+        && make -j 8 && cd ..
+    ENV PATH=$PATH:/canu-2.2/build/bin
+
+
