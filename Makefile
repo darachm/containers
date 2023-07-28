@@ -138,7 +138,7 @@ $(foreach tag,$(bioconda_tags),\
 
 nanopore_tags = chopper \
 	medaka medaka-hack racon nanoplot \
-	guppy-gpu-6.4.6
+	#guppy-gpu-6.4.6 # update to 6.5.7-1~focal
 #$(shell cat nanopore/Dockerfile.nanopore | grep "FROM" | sed 's/.* AS //' )
 docker-nanopore: $(addprefix token/docker-push-nanopore-,$(nanopore_tags)) 
 $(foreach tag,$(nanopore_tags),\

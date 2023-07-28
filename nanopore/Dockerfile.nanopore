@@ -159,12 +159,14 @@ FROM darachm/bioinf:bioinf-base AS chopper
         unzip
     RUN apt-get update && apt-get -y install --no-install-recommends \
         gawk bison gcc make 
-    RUN wget -c https://ftp.gnu.org/gnu/glibc/glibc-2.35.tar.gz \
-        && tar -zxvf glibc-2.35.tar.gz && cd glibc-2.35 \
-        && mkdir glibc-build && cd glibc-build \
-        && ../configure --prefix=/opt/glibc \
-        && make && make install
+#    RUN wget -c https://ftp.gnu.org/gnu/glibc/glibc-2.35.tar.gz \
+#        && tar -zxvf glibc-2.35.tar.gz && cd glibc-2.35 \
+#        && mkdir glibc-build && cd glibc-build \
+#        && ../configure --prefix=/opt/glibc \
+#        && make && make install
+        #&& wget 'https://github.com/wdecoster/chopper/releases/download/v0.5.0/chopper-linux.zip' \
     RUN mkdir chopper && cd chopper \
-        && wget 'https://github.com/wdecoster/chopper/releases/download/v0.5.0/chopper-linux.zip' \
-        && unzip chopper-linux.zip && chmod a+x chopper
-    ENV PATH=$PATH:/chopper
+        && wget 'https://github.com/wdecoster/chopper/releases/download/v0.5.0/chopper-musl.zip' \
+        && unzip chopper-musl.zip && chmod a+x target/release/chopper
+    ENV PATH=$PATH:/chopper/target/release
+
