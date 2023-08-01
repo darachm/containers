@@ -32,6 +32,8 @@ FROM r-4.3.1 AS r-4.3.1-tidy
     RUN Rscript -e 'install.packages("magrittr",dependencies=T);'
     RUN Rscript -e 'install.packages("tidyverse",dependencies=T);'
     RUN Rscript -e 'install.packages("future",dependencies=T);'
+    RUN Rscript -e 'install.packages("future",dependencies=T);'
+    RUN Rscript -e 'install.packages("future.apply",dependencies=T);'
 
 FROM r-4.3.1-tidy AS r-4.3.1-tidy-db
     RUN Rscript -e 'install.packages("hash",dependencies=T);'
