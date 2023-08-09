@@ -87,7 +87,7 @@ rr_tags = r-base-4.3.1 \
 	r-4.3.1-tidy-db-viz-mod-bio \
 	r-4.3.1-tidy-db-viz-mod-bio-nvimr
 #$(shell cat r/Dockerfile.rr | grep "FROM" | sed 's/.* AS //' )
-docker-rr: $(addprefix token/docker-push-rr-,$(r_tags))
+docker-rr: $(addprefix token/docker-push-rr-,$(rr_tags))
 $(foreach tag,$(rr_tags),\
 	$(eval $(call docker-builder,rr,$(tag))) )
 $(foreach tag,$(rr_tags),\
