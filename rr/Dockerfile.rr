@@ -24,6 +24,7 @@ FROM r-base-4.3.1 AS r-4.3.1
         libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
         libharfbuzz-dev libfribidi-dev \
         cmake \
+        libfftw3-3 libfftw3-bin libfftw3-dev \
         tmux rxvt-unicode
     RUN apt upgrade -y
 
@@ -83,4 +84,5 @@ FROM r-4.3.1-tidy-db-viz-mod AS r-4.3.1-tidy-db-viz-mod-bio
 
 FROM r-4.3.1-tidy-db-viz-mod-bio AS r-4.3.1-tidy-db-viz-mod-bio-nvimr
     RUN Rscript -e 'install.packages("nvimr",dependencies=T);'
+
 
