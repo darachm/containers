@@ -84,8 +84,7 @@ $(foreach tag,$(cuda-tensorflow_tags),\
 	$(eval $(call singularity-builder,cuda-tensorflow,$(tag))) )
 
 rr_tags = r-base-4.3.1 \
-	r-4.3.1-tidy-db-viz-mod-bio \
-	r-4.3.1-tidy-db-viz-mod-bio-nvimr
+	r-4.3.1-tidy-db-viz-mod-bio 
 #$(shell cat r/Dockerfile.rr | grep "FROM" | sed 's/.* AS //' )
 docker-rr: $(addprefix token/docker-push-rr-,$(rr_tags))
 $(foreach tag,$(rr_tags),\
@@ -424,7 +423,6 @@ all: singularity-cuda-tensorflow singularity-rr singularity-bioinf \
 
 #all_containers = \
 #	~/.singularity/fitseq.sif \
-#	#~/.singularity/r-tidy-extra-nvimr.sif \
 #	#~/.singularity/ncbi-blast.sif \
 ##~/.singularity/bioinfmunger.sif : 
 ##~/.singularity/starcode.sif : 
@@ -484,7 +482,6 @@ all: singularity-cuda-tensorflow singularity-rr singularity-bioinf \
 #
 #~/.singularity/r-tidy.sif : ~/.singularity/r.sif
 #~/.singularity/r-tidy-extra.sif : ~/.singularity/r-tidy.sif
-#~/.singularity/r-tidy-extra-nvimr.sif : ~/.singularity/r-tidy-extra.sif
 #
 #~/.singularity/python3-extra.sif : ~/.singularity/python3.sif
 #~/.singularity/python3.sif : ~/.singularity/ubuntu2004.sif
